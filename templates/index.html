@@ -50,16 +50,32 @@ window.currentProject=p; let qs=p.questions.map((x,n)=>'<div class="discovery-it
 let ds=Object.entries(p.strategy.departments).map(([k,v])=>'<div class="dept"><h3>'+k+'</h3><p>'+v.join(' • ')+'</p></div>').join('');
 o.innerHTML='<div class="card"><div class="section-label">Research</div><h2>What we know so far</h2><div class="facts">'+facts+'</div><div class="notice">Verified website research, client-provided information and PMC recommendations should remain separate throughout the strategy.</div></div>'+
 '<div class="card"><div class="section-label">Discovery</div><h2>Answer Discovery Questions</h2><p class="muted">Capture client answers and internal notes directly in the workspace. These answers become part of the strategy context.</p><div class="discovery-list">'+qs+'</div><div style="margin-top:18px"><button class="btn primary" onclick="saveDiscovery()">Save Answers + Update Strategy Context</button><span id="saveState" class="save-state"></span></div></div>'+
-'<div class="card"><div class="section-label">Integrated Strategy</div><h2>Executive Direction</h2><p>'+p.strategy.executive+'</p><h2 style="margin-top:28px">Department Framework</h2><div class="dept-grid">'+ds+'</div><div style="margin-top:22px"><button class="btn">Edit Strategy</button> <button class="btn primary" onclick="document.getElementById(\'investment\').scrollIntoView({behavior:\'smooth\'})">Approve + Continue to Investment →</button></div></div>'+buildInvestment(p);
+'<div class="card" id="strategyCard"><div class="section-label">Integrated Strategy</div><h2>Executive Direction</h2><p>'+p.strategy.executive+'</p><h2 style="margin-top:28px">Department Framework</h2><div class="dept-grid">'+ds+'</div><div style="margin-top:22px"><button class="btn">Edit Strategy</button> <button class="btn primary" onclick="document.getElementById(\'investment\').scrollIntoView({behavior:\'smooth\'})">Approve + Continue to Investment →</button></div></div>'+buildInvestment(p);
 }catch(e){o.innerHTML='<div class="card"><h2>Something went wrong</h2><p class="muted">'+e+'</p></div>'}
 }
 
-function saveDiscovery(){
+async function saveDiscovery(){
  const answers=[...document.querySelectorAll('.discovery-answer')].map(el=>({question:el.dataset.question,answer:el.value.trim()}));
- if(window.currentProject) window.currentProject.discovery_answers=answers;
- localStorage.setItem('pmc_discovery_'+(window.currentProject?.id||'draft'),JSON.stringify(answers));
+ if(!window.currentProject)return;
+ window.currentProject.discovery_answers=answers;
+ localStorage.setItem('pmc_discovery_'+window.currentProject.id,JSON.stringify(answers));
  const filled=answers.filter(x=>x.answer).length;
- document.getElementById('saveState').textContent='✓ Saved '+filled+' of '+answers.length+' answers';
- const step=document.querySelectorAll('.step')[1]; if(filled){step.classList.add('done')}
+ const state=document.getElementById('saveState'); state.textContent='Updating strategy…';
+ try{
+   let r=await fetch('/api/projects/refine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(window.currentProject)});
+   let data=await r.json(); window.currentProject.strategy=data.strategy;
+   const ds=Object.entries(data.strategy.departments).map(([k,v])=>'<div class="dept"><h3>'+k+'</h3><p>'+v.join(' • ')+'</p></div>').join('');
+   document.getElementById('strategyCard').innerHTML='<div class="section-label">Integrated Strategy • Updated from Discovery</div><h2>Executive Direction</h2><p>'+esc(data.strategy.executive)+'</p><h2 style="margin-top:28px">Department Framework</h2><div class="dept-grid">'+ds+'</div><div class="notice">'+filled+' discovery answer'+(filled===1?'':'s')+' now inform this strategy. Verified research remains labeled separately from client-provided inputs.</div><div style="margin-top:22px"><button class="btn">Edit Strategy</button> <button class="btn primary" onclick="document.getElementById('investment').scrollIntoView({behavior:'smooth'})">Approve + Continue to Investment →</button></div>';
+   state.textContent='✓ Saved '+filled+' of '+answers.length+' answers + strategy updated';
+   document.querySelectorAll('.step')[1].classList.toggle('done',filled>0); document.querySelectorAll('.step')[2].classList.add('done');
+ }catch(e){state.textContent='Could not update strategy. Answers are saved locally.'}
 }
+function buildInvestment(p){
+ let raw=String(p.budget||'').replace(/[^0-9.]/g,''); let budget=parseFloat(raw)||100000;
+ let mix=[['Paid Search',30],['Paid Social',25],['Performance Media',20],['SEO + AEO',15],['Creative / Testing',10]];
+ let rows=mix.map(x=>'<div class="alloc-row"><b>'+x[0]+'</b><div class="bar"><i style="width:'+x[1]+'%"></i></div><span>'+x[1]+'%</span></div>').join('');
+ let money=n=>'$'+Math.round(n).toLocaleString();
+ return '<div class="card" id="investment"><div class="section-label">Investment</div><h2>Recommended Investment Framework</h2><p class="muted">A working allocation model tied to the strategy. Adjust before client presentation.</p><div class="metric-grid"><div class="metric"><b>'+money(budget)+'</b><span>Working Budget</span></div><div class="metric"><b>5</b><span>Core Channels</span></div><div class="metric"><b>70%</b><span>Demand Capture + Creation</span></div><div class="metric"><b>30%</b><span>Brand + Growth Support</span></div></div><div class="alloc">'+rows+'</div><div class="notice">Planning model only. Final channel minimums, production costs, geography and campaign duration should be validated by PMC before client delivery.</div><div class="deck-actions"><button class="btn">Edit Allocation</button><button class="btn primary" onclick="document.getElementById('deck').scrollIntoView({behavior:'smooth'})">Approve + Build Deck →</button></div></div><div class="card" id="deck"><div class="section-label">Deck Builder</div><h2>PMC Strategy Presentation</h2><div class="deck-preview"><small>PMC Intelligence • Strategy Draft</small><h3>'+esc(p.client||'Client')+' Growth Strategy</h3><p>Executive direction, market intelligence, integrated department recommendations, investment framework and measurement plan.</p><div class="deck-actions"><button class="btn primary">Generate PMC Deck</button><button class="btn" style="background:#203d51">Review Measurement Plan</button></div></div></div>';
+}
+function esc(v){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 </script></body></html>
