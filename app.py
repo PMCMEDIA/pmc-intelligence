@@ -15,7 +15,14 @@ def create():
       "questions":discovery_questions(research,p.get("industry","Other")),
       "strategy":build_strategy(p,research),"status":"Strategy Draft"})
 
+@app.post("/api/projects/refine")
+def refine():
+    p=request.json or {}
+    research=p.get("research") or {}
+    strategy=build_strategy(p,research)
+    return jsonify({"strategy":strategy,"status":"Strategy Updated"})
+
 @app.get("/health")
-def health(): return {"ok":True,"version":"github-v1"}
+def health(): return {"ok":True,"version":"github-v2"}
 
 if __name__=="__main__": app.run(host="0.0.0.0",port=5000,debug=True)
