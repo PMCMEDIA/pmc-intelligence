@@ -2,6 +2,8 @@ from flask import Flask,request,jsonify,render_template,session,redirect,url_for
 from research_engine import research_url,discovery_questions
 from strategy_engine import build_strategy
 from storage import init_db,save,all_for,get
+from competitive_engine import competitive_intelligence
+from forecast_engine import forecast
 import os, uuid
 
 app=Flask(__name__)
@@ -69,7 +71,27 @@ def save_current():
     if not owner(): return jsonify({"error":"Login required"}),401
     p=request.json or {}; save(owner(),p); return jsonify({"ok":True,"project":p})
 
+@app.post("/api/projects/<pid>/competitive")
+def competitive(pid):
+    if not owner(): return jsonify({"error":"Login required"}),401
+    p=get(owner(),pid)
+    if not p: return jsonify({"error":"Project not found"}),404
+    p["competitive_intelligence"]=competitive_intelligence(p)
+    p["status"]="Competitive Research Draft"
+    save(owner(),p)
+    return jsonify(p["competitive_intelligence"])
+
+@app.post("/api/projects/<pid>/forecast")
+def campaign_forecast(pid):
+    if not owner(): return jsonify({"error":"Login required"}),401
+    p=get(owner(),pid)
+    if not p: return jsonify({"error":"Project not found"}),404
+    p["campaign_outlook"]=forecast(p)
+    p["status"]="Campaign Outlook Draft"
+    save(owner(),p)
+    return jsonify(p["campaign_outlook"])
+
 @app.get("/health")
-def health(): return {"ok":True,"version":"github-v4-pmc-login"}
+def health(): return {"ok":True,"version":"github-v5-intelligence"}
 
 if __name__=="__main__": app.run(host="0.0.0.0",port=5000,debug=True)
