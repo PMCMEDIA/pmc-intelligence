@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 DB_PATH=os.getenv("DATABASE_PATH","/var/data/pmc_intelligence.db" if os.path.isdir("/var/data") else "pmc_intelligence.db")
 
 def db():
-    conn=sqlite3.connect(DB_PATH); conn.row_factory=sqlite3.Row; return conn
+    conn=sqlite3.connect(DB_PATH,timeout=20); conn.row_factory=sqlite3.Row; conn.execute("PRAGMA journal_mode=WAL"); conn.execute("PRAGMA busy_timeout=20000"); return conn
 
 def init_db():
     with db() as c:
