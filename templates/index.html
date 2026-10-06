@@ -71,16 +71,35 @@ async function build(){
 }
 function renderProject(p){
  currentProject=p;
- const facts=(p.strategy.facts||[]).map(x=>'<div class="fact"><b>'+esc(x.source)+'</b><strong>'+esc(x.label)+'</strong><div class="muted">'+esc(x.value)+'</div></div>').join("");
- const qs=(p.questions||[]).map((q,n)=>'<div class="discovery-item"><label>Question '+(n+1)+'<br>'+esc(q)+'</label><textarea class="discovery-answer" data-question="'+esc(q)+'"></textarea></div>').join("");
+ const facts=(p.strategy.facts||[]).filter(x=>x.source!=="Discovery Answer").map(x=>'<div class="fact"><b>'+esc(x.source)+'</b><strong>'+esc(x.label)+'</strong><div class="muted">'+esc(x.value)+'</div></div>').join("");
+ const saved={};(p.discovery_answers||[]).forEach(x=>saved[x.question]=x.answer);
+ const qs=(p.questions||[]).map((q,n)=>'<div class="discovery-item"><label>Question '+(n+1)+'<br>'+esc(q)+'</label><textarea class="discovery-answer" data-question="'+esc(q)+'">'+esc(saved[q]||"")+'</textarea></div>').join("");
  const ds=Object.entries(p.strategy.departments||{}).map(([k,v])=>'<div class="dept"><h3>'+esc(k)+'</h3><p>'+v.map(esc).join(" • ")+'</p></div>').join("");
- $("o").innerHTML='<div class="card"><div class="section-label">Research</div><h2>What we know so far</h2><div class="facts">'+facts+'</div></div><div class="card"><div class="section-label">Discovery</div><h2>Answer Discovery Questions</h2><div class="discovery-list">'+qs+'</div><button class="btn primary" onclick="saveDiscovery()">Save Answers + Update Strategy</button></div><div class="card"><div class="section-label">Integrated Strategy</div><h2>Executive Direction</h2><p>'+esc(p.strategy.executive)+'</p><div class="dept-grid">'+ds+'</div></div>';
+ const complete=(p.discovery_answers||[]).some(x=>x.answer);
+ const discovery=complete?'<div class="card" id="discoveryCard"><div class="section-label">02 Discovery • Complete</div><h2>Discovery saved</h2><p class="muted">Answers are incorporated into the strategy and hidden from the main workflow.</p><button class="btn" onclick="editDiscovery()">Edit Answers</button></div>':'<div class="card" id="discoveryCard"><div class="section-label">02 Discovery</div><h2>Answer Discovery Questions</h2><div class="discovery-list">'+qs+'</div><button class="btn primary" onclick="saveDiscovery()">Save Answers + Continue →</button></div>';
+ const strategy=complete?'<div class="card" id="strategyCard"><div class="section-label">03 Strategy</div><h2>Integrated Strategy</h2><p>'+esc(p.strategy.executive)+'</p><div class="dept-grid">'+ds+'</div><div class="deck-actions"><button class="btn" onclick="editDiscovery()">Edit Discovery</button><button class="btn primary" onclick="showInvestment()">Approve Strategy + Continue →</button></div></div>':'';
+ $("o").innerHTML='<div class="card"><div class="section-label">01 Research</div><h2>What we know so far</h2><div class="facts">'+facts+'</div></div>'+discovery+strategy;
+}
+function editDiscovery(){
+ if(!currentProject)return;
+ const saved={};(currentProject.discovery_answers||[]).forEach(x=>saved[x.question]=x.answer);
+ const qs=(currentProject.questions||[]).map((q,n)=>'<div class="discovery-item"><label>Question '+(n+1)+'<br>'+esc(q)+'</label><textarea class="discovery-answer" data-question="'+esc(q)+'">'+esc(saved[q]||"")+'</textarea></div>').join("");
+ $("discoveryCard").innerHTML='<div class="section-label">02 Discovery • Editing</div><h2>Edit Discovery Answers</h2><div class="discovery-list">'+qs+'</div><button class="btn primary" onclick="saveDiscovery()">Save Changes + Return to Strategy →</button>';
 }
 async function saveDiscovery(){
  if(!currentProject)return;
  currentProject.discovery_answers=[...document.querySelectorAll(".discovery-answer")].map(el=>({question:el.dataset.question,answer:el.value.trim()}));
  const r=await fetch("/api/projects/refine",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(currentProject)});
- if(r.ok){const d=await r.json();currentProject=d.project;renderProject(currentProject);loadProjects()}
+ if(r.ok){const d=await r.json();currentProject=d.project;renderProject(currentProject);loadProjects();setTimeout(()=>$("strategyCard")&&$("strategyCard").scrollIntoView({behavior:"smooth"}),100)}
+}
+function showInvestment(){
+ if($("investmentCard"))return $("investmentCard").scrollIntoView({behavior:"smooth"});
+ $("o").insertAdjacentHTML("beforeend",'<div class="card" id="investmentCard"><div class="section-label">04 Investment</div><h2>Investment Planning</h2><p class="muted">Review the working budget and recommended channel allocation before building the deck.</p><div class="metric-grid"><div class="metric"><b>'+esc(currentProject.budget||"TBD")+'</b><span>Working Budget</span></div><div class="metric"><b>Strategy-led</b><span>Allocation Model</span></div></div><div class="deck-actions"><button class="btn primary" onclick="showDeck()">Approve Investment + Continue →</button></div></div>');
+ $("investmentCard").scrollIntoView({behavior:"smooth"});
+}
+function showDeck(){
+ if(!$("deckCard"))$("o").insertAdjacentHTML("beforeend",'<div class="card" id="deckCard"><div class="section-label">05 Deck</div><h2>PMC Strategy Presentation</h2><div class="deck-preview"><small>PMC Intelligence</small><h3>'+esc(currentProject.client)+' Strategy</h3><p>Ready for deck outline review and PowerPoint generation.</p><div class="deck-actions"><button class="btn primary">Build Deck Outline →</button></div></div></div>');
+ $("deckCard").scrollIntoView({behavior:"smooth"});
 }
 async function init(){try{const r=await fetch("/api/session",{cache:"no-store"});const x=await r.json();if(x.owner){showApp();loadProjects()}}catch(e){}}
 {% if logged_in %}loadProjects();{% else %}init();{% endif %}
