@@ -4,6 +4,8 @@ from strategy_engine import build_strategy
 from storage import init_db,save,all_for,get
 from competitive_engine import competitive_intelligence
 from forecast_engine import forecast
+from deck_engine import default_outline,build_pptx
+from flask import send_file
 import os, uuid
 
 app=Flask(__name__)
@@ -90,6 +92,30 @@ def campaign_forecast(pid):
     p["status"]="Campaign Outlook Draft"
     save(owner(),p)
     return jsonify(p["campaign_outlook"])
+
+@app.get("/api/projects/<pid>/deck-outline")
+def deck_outline(pid):
+    if not owner(): return jsonify({"error":"Login required"}),401
+    p=get(owner(),pid)
+    if not p: return jsonify({"error":"Project not found"}),404
+    if not p.get("deck_outline"): p["deck_outline"]=default_outline(p); save(owner(),p)
+    return jsonify(p["deck_outline"])
+
+@app.post("/api/projects/<pid>/deck-outline")
+def save_deck_outline(pid):
+    if not owner(): return jsonify({"error":"Login required"}),401
+    p=get(owner(),pid)
+    if not p: return jsonify({"error":"Project not found"}),404
+    p["deck_outline"]=(request.json or {}).get("slides",[]); p["status"]="Deck Outline Ready"; save(owner(),p)
+    return jsonify({"ok":True,"slides":p["deck_outline"]})
+
+@app.get("/api/projects/<pid>/deck.pptx")
+def export_deck(pid):
+    if not owner(): return jsonify({"error":"Login required"}),401
+    p=get(owner(),pid)
+    if not p: return jsonify({"error":"Project not found"}),404
+    stream=build_pptx(p); name="".join(ch if ch.isalnum() or ch in " -_" else "" for ch in p.get("client","Client")).strip()+"_PMC_Strategy.pptx"
+    return send_file(stream,as_attachment=True,download_name=name,mimetype="application/vnd.openxmlformats-officedocument.presentationml.presentation")
 
 @app.get("/health")
 def health(): return {"ok":True,"version":"github-v5-intelligence"}
