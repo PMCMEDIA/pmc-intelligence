@@ -71,7 +71,11 @@ def refine():
 @app.post("/api/projects/save")
 def save_current():
     if not owner(): return jsonify({"error":"Login required"}),401
-    p=request.json or {}; save(owner(),p); return jsonify({"ok":True,"project":p})
+    p=request.json or {}
+    if not p.get("id"): return jsonify({"error":"Project id is required"}),400
+    existing=get(owner(),p["id"])
+    if not existing: return jsonify({"error":"Project not found"}),404
+    save(owner(),p); return jsonify({"ok":True,"project":p})
 
 @app.post("/api/projects/<pid>/competitive")
 def competitive(pid):
@@ -114,10 +118,13 @@ def export_deck(pid):
     if not owner(): return jsonify({"error":"Login required"}),401
     p=get(owner(),pid)
     if not p: return jsonify({"error":"Project not found"}),404
+    if not p.get("measurement_approved"): return jsonify({"error":"Measurement and success framework must be approved before export"}),400
+    if not p.get("deck_outline"): p["deck_outline"]=default_outline(p); save(owner(),p)
+    if not any(x.get("include",True) for x in p.get("deck_outline",[])): return jsonify({"error":"Deck must include at least one slide"}),400
     stream=build_pptx(p); name="".join(ch if ch.isalnum() or ch in " -_" else "" for ch in p.get("client","Client")).strip()+"_PMC_Strategy.pptx"
     return send_file(stream,as_attachment=True,download_name=name,mimetype="application/vnd.openxmlformats-officedocument.presentationml.presentation")
 
 @app.get("/health")
-def health(): return {"ok":True,"version":"github-v5-intelligence"}
+def health(): return {"ok":True,"version":"github-v6-qa"}
 
 if __name__=="__main__": app.run(host="0.0.0.0",port=5000,debug=True)
