@@ -17,7 +17,7 @@ input,select,textarea{width:100%;padding:12px 13px;border:1px solid #ccd8df;bord
 .full{grid-column:1/-1}.btn{background:var(--navy);color:white;border:0;padding:13px 18px;border-radius:9px;font-weight:750;cursor:pointer}.btn.primary{background:var(--teal)}.btn:hover{filter:brightness(.96)}
 .progress{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:24px 0}.step{background:white;border:1px solid var(--line);padding:13px;border-radius:11px;font-size:12px}.step b{display:block;margin-bottom:4px}.step.done{border-color:#a6e4ea;background:#f3fcfd}
 .section-label{font-size:11px;font-weight:800;letter-spacing:1.4px;color:#78909e;text-transform:uppercase}.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}.fact{border:1px solid var(--line);border-radius:10px;padding:13px}.fact b{font-size:11px;color:#118a98;display:block;margin-bottom:4px}
-.questions li{margin:8px 0;line-height:1.45}.discovery-list{display:grid;gap:14px;margin-top:18px}.discovery-item{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fbfcfd}.discovery-item label{display:block;font-weight:750;line-height:1.4;margin-bottom:9px}.discovery-item textarea{min-height:82px;background:white}.save-state{font-size:12px;color:#118a98;font-weight:700;margin-left:10px}.dept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.dept{border:1px solid var(--line);border-radius:12px;padding:17px}.dept h3{margin:0 0 8px;font-size:15px}.dept p{margin:0;color:#657582;line-height:1.5}
+.questions li{margin:8px 0;line-height:1.45}.discovery-list{display:grid;gap:14px;margin-top:18px}.discovery-item{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fbfcfd}.discovery-item label{display:block;font-weight:750;line-height:1.4;margin-bottom:9px}.discovery-item textarea{min-height:82px;background:white}.save-state{font-size:12px;color:#118a98;font-weight:700;margin-left:10px}.dept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.dept{border:1px solid var(--line);border-radius:12px;padding:17px}.dept h3{margin:0 0 8px;font-size:15px}.dept p{margin:0;color:#657582;line-height:1.5}.strategy-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:16px}.strategy-actions{display:flex;gap:8px;flex-wrap:wrap}.dept{position:relative}.dept-edit{width:100%;min-height:125px;margin-top:8px}.dept-toolbar{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px}.dept-toolbar button{padding:7px 10px;font-size:11px}.strategy-editor{min-height:130px;margin:12px 0}.edit-hint{font-size:12px;color:var(--muted);margin-top:5px}.approved-pill{display:inline-block;background:#e9fafb;color:#087987;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800}
 .metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.metric{padding:17px;border-radius:12px;background:#f7fafb;border:1px solid var(--line)}.metric b{display:block;font-size:20px;color:var(--navy);margin-bottom:4px}.metric span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}.alloc{margin:15px 0}.alloc-row{display:grid;grid-template-columns:150px 1fr 55px;gap:12px;align-items:center;margin:10px 0;font-size:13px}.bar{height:9px;background:#eaf0f3;border-radius:20px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),#55d4df);border-radius:20px}.deck-preview{background:linear-gradient(135deg,#0b1724,#18364b);color:white;border-radius:14px;padding:24px;margin-top:16px}.deck-preview small{color:#8ea8b8;text-transform:uppercase;letter-spacing:1px}.deck-preview h3{font-size:24px;margin:8px 0}.deck-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.notice{padding:13px 15px;border-radius:10px;background:#fff8e7;border:1px solid #f3e1ae;color:#755b17;font-size:13px;margin-top:16px}
 .loading{display:flex;gap:12px;align-items:center}.spinner{width:20px;height:20px;border:3px solid #d9eef1;border-top-color:var(--teal);border-radius:50%;animation:s .8s linear infinite}@keyframes s{to{transform:rotate(360deg)}}
 @media(max-width:900px){.metric-grid{grid-template-columns:1fr 1fr}.side{display:none}.main{margin:0;padding:24px}.grid,.facts,.dept-grid{grid-template-columns:1fr}.progress{grid-template-columns:1fr 1fr}.hero{display:block}.status{display:inline-block;margin-top:12px}}
@@ -77,8 +77,49 @@ function renderProject(p){
  const ds=Object.entries(p.strategy.departments||{}).map(([k,v])=>'<div class="dept"><h3>'+esc(k)+'</h3><p>'+v.map(esc).join(" • ")+'</p></div>').join("");
  const complete=(p.discovery_answers||[]).some(x=>x.answer);
  const discovery=complete?'<div class="card" id="discoveryCard"><div class="section-label">02 Discovery • Complete</div><h2>Discovery saved</h2><p class="muted">Answers are incorporated into the strategy and hidden from the main workflow.</p><button class="btn" onclick="editDiscovery()">Edit Answers</button></div>':'<div class="card" id="discoveryCard"><div class="section-label">02 Discovery</div><h2>Answer Discovery Questions</h2><div class="discovery-list">'+qs+'</div><button class="btn primary" onclick="saveDiscovery()">Save Answers + Continue →</button></div>';
- const strategy=complete?'<div class="card" id="strategyCard"><div class="section-label">03 Strategy</div><h2>Integrated Strategy</h2><p>'+esc(p.strategy.executive)+'</p><div class="dept-grid">'+ds+'</div><div class="deck-actions"><button class="btn" onclick="editDiscovery()">Edit Discovery</button><button class="btn primary" onclick="showInvestment()">Approve Strategy + Continue →</button></div></div>':'';
+ const strategy=complete?renderStrategy(p):'';
  $("o").innerHTML='<div class="card"><div class="section-label">01 Research</div><h2>What we know so far</h2><div class="facts">'+facts+'</div></div>'+discovery+strategy;
+}
+function renderStrategy(p){
+ const approved=p.strategy_approved?'<span class="approved-pill">✓ Approved</span>':'';
+ const ds=Object.entries(p.strategy.departments||{}).map(([k,v])=>'<div class="dept"><div class="dept-toolbar"><h3>'+esc(k)+'</h3><button class="btn" onclick="editDepartment(\''+encodeURIComponent(k)+'\')">Edit</button></div><p>'+v.map(esc).join(" • ")+'</p></div>').join("");
+ return '<div class="card" id="strategyCard"><div class="strategy-head"><div><div class="section-label">03 Strategy</div><h2>Integrated Strategy</h2></div>'+approved+'</div><div id="executiveView"><p>'+esc(p.strategy.executive)+'</p></div><div class="strategy-actions"><button class="btn" onclick="editExecutive()">Edit Executive Direction</button><button class="btn" onclick="addDepartment()">+ Add Department</button></div><h2 style="margin-top:26px">Department Builder</h2><p class="muted">Edit PMC recommendations by department. Use one recommendation per line while editing.</p><div class="dept-grid" id="departmentGrid">'+ds+'</div><div class="deck-actions"><button class="btn" onclick="editDiscovery()">Edit Discovery</button><button class="btn primary" onclick="approveStrategy()">Save + Approve Strategy →</button></div><span id="strategySaveState" class="save-state"></span></div>';
+}
+function editExecutive(){
+ const box=$("executiveView"); if(!box||!currentProject)return;
+ box.innerHTML='<textarea id="executiveEditor" class="strategy-editor">'+esc(currentProject.strategy.executive||"")+'</textarea><div class="strategy-actions"><button class="btn primary" onclick="saveExecutive()">Save Executive Direction</button><button class="btn" onclick="renderProject(currentProject)">Cancel</button></div>';
+}
+async function saveExecutive(){
+ const el=$("executiveEditor"); if(!el)return;
+ currentProject.strategy.executive=el.value.trim(); currentProject.strategy_approved=false; await saveStrategyProject("Executive direction saved");
+}
+function editDepartment(encoded){
+ const name=decodeURIComponent(encoded), grid=$("departmentGrid"); if(!grid)return;
+ const cards=[...grid.querySelectorAll(".dept")], names=Object.keys(currentProject.strategy.departments||{}), idx=names.indexOf(name), card=cards[idx]; if(!card)return;
+ const value=(currentProject.strategy.departments[name]||[]).join("\n");
+ card.innerHTML='<div class="dept-toolbar"><h3>'+esc(name)+'</h3></div><textarea class="dept-edit" id="deptEdit">'+esc(value)+'</textarea><div class="edit-hint">One recommendation per line.</div><div class="strategy-actions" style="margin-top:10px"><button class="btn primary" onclick="saveDepartment(\''+encodeURIComponent(name)+'\')">Save</button><button class="btn" onclick="removeDepartment(\''+encodeURIComponent(name)+'\')">Remove</button></div>';
+}
+async function saveDepartment(encoded){
+ const name=decodeURIComponent(encoded), el=$("deptEdit"); if(!el)return;
+ currentProject.strategy.departments[name]=el.value.split("\n").map(x=>x.trim()).filter(Boolean); currentProject.strategy_approved=false; await saveStrategyProject(name+" updated");
+}
+async function removeDepartment(encoded){
+ const name=decodeURIComponent(encoded); delete currentProject.strategy.departments[name]; currentProject.strategy_approved=false; await saveStrategyProject(name+" removed");
+}
+function addDepartment(){
+ const name=prompt("Department name"); if(!name||!name.trim())return;
+ const clean=name.trim(); if(currentProject.strategy.departments[clean])return alert("That department already exists.");
+ currentProject.strategy.departments[clean]=["Add recommendation"]; currentProject.strategy_approved=false; renderProject(currentProject); setTimeout(()=>editDepartment(encodeURIComponent(clean)),50);
+}
+async function saveStrategyProject(message){
+ currentProject.status="Strategy Editing";
+ const r=await fetch("/api/projects/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(currentProject)});
+ if(r.ok){renderProject(currentProject);loadProjects();setTimeout(()=>{const s=$("strategySaveState");if(s)s.textContent="✓ "+message},50)}
+}
+async function approveStrategy(){
+ currentProject.strategy_approved=true; currentProject.status="Strategy Approved";
+ const r=await fetch("/api/projects/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(currentProject)});
+ if(r.ok){renderProject(currentProject);loadProjects();showInvestment()}
 }
 function editDiscovery(){
  if(!currentProject)return;
