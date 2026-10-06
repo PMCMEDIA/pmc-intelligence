@@ -16,6 +16,11 @@ def _rgb(v,fallback):
 def default_outline(p):
     out=[{"title":str(p.get("client","Client"))+" Strategy","body":"Integrated Marketing Strategy\nPrepared by PMC Media Group","type":"cover","include":True},{"title":"Executive Direction","body":p.get("strategy",{}).get("executive",""),"type":"content","include":True}]
     facts=p.get("strategy",{}).get("facts",[])[:6]; out.append({"title":"Research + Discovery","body":"\n".join(["• "+str(x.get("label"))+": "+str(x.get("value")) for x in facts]),"type":"content","include":True})
+    comp=p.get("competitive_intelligence") or {}
+    if comp.get("candidates"): out.append({"title":"Competitive Landscape","body":"","type":"competitive","include":True})
+    outlook=p.get("campaign_outlook") or {}
+    if outlook.get("scenarios"): out.append({"title":"Benchmark + Campaign Outlook","body":"","type":"forecast","include":True})
+    if outlook.get("roi_ready"): out.append({"title":"ROI / ROAS Scenario Outlook","body":"","type":"roi","include":True})
     for name,recs in p.get("strategy",{}).get("departments",{}).items():
         d=p.get("department_details",{}).get(name,{}); body=[]
         if d.get("objective"): body.append("OBJECTIVE\n"+d["objective"])
@@ -43,7 +48,23 @@ def build_pptx(p):
         accent_shape=slide.shapes.add_shape(MSO_SHAPE.RECTANGLE,Inches(.65),Inches(.65),Inches(.12),Inches(.72)); accent_shape.fill.solid(); accent_shape.fill.fore_color.rgb=brand_color; accent_shape.line.fill.background()
         text(slide,1,.62,11.5,.8,item.get("title",""),34 if typ=="cover" else 27,WHITE if dark else NAVY,True)
         text(slide,1,7.02,11,.22,("PMC Intelligence" if treatment!="client" else str(p.get("client","Client"))),8,brand_color)
-        if typ=="investment":
+        if typ=="competitive":
+            y=1.55
+            for x in (p.get("competitive_intelligence") or {}).get("candidates",[])[:7]:
+                text(slide,1,y,10.8,.35,"• "+str(x.get("title","")),14,NAVY,True); y+=.48
+            text(slide,1,5.9,11,.5,"Candidate competitors require PMC review. Public-source evidence only; no unsupported market-share claims.",10,MUTED)
+        elif typ=="forecast":
+            scenarios=(p.get("campaign_outlook") or {}).get("scenarios",[])
+            y=1.65
+            for s in scenarios:
+                text(slide,1,y,2.1,.4,s.get("scenario",""),16,brand_color,True); text(slide,3.1,y,1.4,.4,"CPC $"+str(s.get("cpc","")),13,NAVY); text(slide,4.6,y,1.6,.4,str(s.get("clicks",0))+" clicks",13,NAVY); text(slide,6.3,y,1.8,.4,str(s.get("conversions",0))+" conv.",13,NAVY); text(slide,8.2,y,1.5,.4,"CPA $"+str(s.get("cpa",0)),13,NAVY); y+=.85
+            text(slide,1,5.2,11,.8,"Modeled planning range based on benchmark assumptions. Not a performance guarantee.",11,MUTED)
+        elif typ=="roi":
+            scenarios=(p.get("campaign_outlook") or {}).get("scenarios",[]); y=1.65
+            for s in scenarios:
+                text(slide,1,y,2.2,.4,s.get("scenario",""),16,brand_color,True); text(slide,3.2,y,2.3,.4,"Revenue "+("$"+format(float(s.get("projected_revenue") or 0),",.0f")),14,NAVY); text(slide,5.8,y,1.8,.4,"ROAS "+str(s.get("roas") or "—")+"x",14,NAVY,True); text(slide,8,y,2,.4,"ROI "+(str(s.get("roi_percent"))+"%" if s.get("roi_percent") is not None else "—"),14,NAVY,True); y+=.85
+            text(slide,1,5.2,11,.8,(p.get("campaign_outlook") or {}).get("roi_note",""),11,MUTED)
+        elif typ=="investment":
             inv=[x for x in p.get("investment_allocations",[]) if float(x.get("amount",0))>0]
             if inv:
                 data=ChartData(); data.categories=[x.get("department","") for x in inv]; data.add_series("Investment",[float(x.get("amount",0)) for x in inv])
