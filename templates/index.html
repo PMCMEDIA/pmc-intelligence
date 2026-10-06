@@ -26,7 +26,7 @@ input,select,textarea{width:100%;padding:12px 13px;border:1px solid #ccd8df;bord
 <body><div class="shell">
 <aside class="side"><div class="brand-lockup"><img class="pmc-png-logo" src="/static/pmc-intelligence-logo.png" alt="PMC Intelligence"></div><div class="nav"><small>Workspace</small><div class="active" onclick="window.scrollTo({top:0,behavior:'smooth'})">◆ Strategy Builder</div><div onclick="jumpToStage(1)">⌕ Research</div><div onclick="jumpToStage(3)">▤ Departments</div><div onclick="jumpToStage(4)">◫ Budget Builder</div><div onclick="jumpToStage(5)">▱ Deck Builder</div><small>Knowledge</small><div onclick="currentProject&&showDeck()">▦ PMC Templates</div><div onclick="currentProject&&showMeasurement()">⌁ Measurement</div></div><div class="version">PMC Intelligence • Alpha</div></aside>
 <main class="main"><div id="loginScreen" class="login-screen {% if logged_in %}hidden{% endif %}"><div class="login-shell"><div class="login-brand"><img class="login-logo" src="/static/pmc-intelligence-logo.png" alt="PMC Intelligence"><div class="login-kicker">PMC STRATEGY OPERATING SYSTEM</div><h1>Strategy starts here.</h1><p>Turn client discovery, research and PMC expertise into integrated strategy, investment planning and presentation-ready work.</p><div class="login-points"><span>Research</span><span>Discovery</span><span>Strategy</span><span>Investment</span><span>Decks</span></div></div><div class="login-card"><div class="section-label">Secure PMC Workspace</div><h2>Welcome back</h2><p class="muted">Sign in with your PMC email address to access your saved client strategies.</p><form method="post" action="/enter"><label>PMC Email</label><input id="loginEmail" name="email" type="email" autocomplete="email" placeholder="yourname@pmcne.com" required><button id="loginButton" class="btn primary login-btn" type="submit">Enter PMC Intelligence →</button></form><div id="loginError" class="login-error {% if not login_error %}hidden{% endif %}">{{ login_error }}</div><div class="login-foot">Internal access • @pmcne.com accounts only</div></div></div></div><div id="appWorkspace" class="{% if not logged_in %}hidden{% endif %}">
-<div class="hero"><div><div class="section-label">PMC Strategy Operating System</div><h1>Build a smarter client strategy.</h1><div class="muted">Research the business, identify what PMC still needs to know, and build one integrated strategy across every department.</div></div><div><span class="status">● Saved Workspace</span><button class="btn" style="margin-left:8px;padding:8px 12px" onclick="logout()">Sign Out</button></div></div>
+<div class="hero"><div><div class="section-label">PMC Strategy Operating System</div><h1>Build a smarter client strategy.</h1><div class="muted">Research the business, identify what PMC still needs to know, and build one integrated strategy across every department.</div></div><div><span class="status">● Saved Workspace</span><button class="btn" style="margin-left:8px;padding:8px 12px" onclick="logout()">Sign Out</button><noscript><a href="/logout" style="color:white;margin-left:8px">Sign Out</a></noscript></div></div>
 <div id="activeProjectBanner"></div><div class="card"><div class="section-label">PMC Team Projects</div><h2>Shared Strategy Workspace</h2><p class="muted">See strategies and tests created by the PMC team. The original creator remains identified on each project.</p><div id="projectList"><p class="muted">Loading saved projects…</p></div></div><div class="progress" id="workflowProgress"><div class="step"><b>01 Research</b>Website + positioning</div><div class="step"><b>02 Discovery</b>Fill knowledge gaps</div><div class="step"><b>03 Strategy</b>Department build</div><div class="step"><b>04 Investment</b>Budget + channel mix</div><div class="step"><b>05 Deck</b>PMC presentation</div></div>
 <div class="card"><div class="section-label">New Project</div><h2>Client Strategy Intake</h2><p class="muted">Start with what you know. PMC Intelligence will research the public website and identify the remaining discovery questions.</p>
 <div class="grid">
@@ -57,7 +57,7 @@ async function login(){
  }catch(ex){err.textContent=ex.message||"Could not sign in.";err.classList.remove("hidden")}
  finally{btn.disabled=false;btn.textContent="Enter PMC Intelligence →"}
 }
-async function logout(){await fetch("/api/logout",{method:"POST"});location.reload()}
+async function logout(){try{await fetch("/api/logout",{method:"POST"});}finally{window.location.href="/logout"}}
 async function loadProjects(){
  const r=await fetch("/api/projects"); if(!r.ok)return;
  const items=await r.json();
@@ -244,9 +244,20 @@ async function generateForecast(){
  const r=await fetch('/api/projects/'+currentProject.id+'/forecast',{method:'POST'});if(!r.ok)return alert('Could not generate forecast.');const x=await r.json();currentProject.campaign_outlook=x;renderForecast(x);
 }
 function renderForecast(x){
- const rows=(x.scenarios||[]).map(s=>'<tr><td><b>'+esc(s.scenario)+'</b></td><td>
+ const rows=(x.scenarios||[]).map(s=>'<tr><td><b>'+esc(s.scenario)+'</b></td><td>$'+esc(s.cpc)+'</td><td>'+esc(s.clicks)+'</td><td>'+esc(s.conversions)+'</td><td>$'+esc(s.cpa)+'</td><td>'+(s.roas!=null?esc(s.roas)+'x':'—')+'</td><td>'+(s.roi_percent!=null?esc(s.roi_percent)+'%':'—')+'</td></tr>').join('');
+ const target=$("forecastResults");if(!target)return;
+ target.innerHTML='<div class="intel-panel" style="margin-top:14px"><h3>Campaign Outlook</h3><div class="notice">'+esc(x.confidence||'Planning estimate')+'</div><table class="scenario-table"><thead><tr><th>Scenario</th><th>CPC</th><th>Clicks</th><th>Conversions</th><th>CPA</th><th>ROAS</th><th>ROI</th></tr></thead><tbody>'+rows+'</tbody></table><p class="muted">'+esc(x.roi_note||'')+'</p><div class="deck-actions"><button class="btn primary" onclick="approveIntelligence()">Approve Intelligence + Build Deck →</button></div></div>';
+}
+async function approveIntelligence(){
+ if(!currentProject.campaign_outlook)return alert('Generate the campaign outlook first.');
+ currentProject.intelligence_approved=true;currentProject.status='Intelligence Approved';
+ const r=await fetch('/api/projects/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(currentProject)});
+ if(!r.ok){const e=await r.json().catch(()=>({}));return alert(e.error||'Could not approve intelligence.')}
+ loadProjects();showDeck();
+}
 async function showDeck(){
- if(!currentProject.measurement_approved)return alert('Approve the measurement framework before building the deck.');if(!currentProject.intelligence_approved)return showIntelligence();
+ if(!currentProject.measurement_approved)return alert('Approve the measurement framework before building the deck.');
+ if(!currentProject.intelligence_approved)return showIntelligence();
  let slides=currentProject.deck_outline;
  if(!slides||!slides.length){const r=await fetch('/api/projects/'+currentProject.id+'/deck-outline');if(!r.ok)return alert('Could not build deck outline.');slides=await r.json();currentProject.deck_outline=slides}
  renderDeckBuilder();
