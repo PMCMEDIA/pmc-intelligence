@@ -220,12 +220,15 @@ async function saveTactics(approve){
 }
 function showMeasurement(){
  const tactics=Object.entries(currentProject.tactic_allocations||{}).flatMap(([d,items])=>items.filter(t=>t.name).map(t=>({department:d,...t})));
- const rows=tactics.map(t=>'<div class="measure-item"><b>'+esc(t.name)+'</b><div class="muted">'+esc(t.department)+'</div><div style="margin-top:8px">'+(t.kpi?'<strong>'+esc(t.kpi)+'</strong>':'<span class="budget-warn">KPI needed</span>')+'</div></div>').join('');
- const html='<div class="card" id="measurementCard"><div class="section-label">Measurement + Success Framework</div><h2>How We Will Evaluate the Strategy</h2><p class="muted">Digital Media uses performance KPIs such as ROAS, CPA/CPL, conversions and leads. Other PMC departments use success criteria appropriate to their work, including visibility, engagement, deliverables, launches and strategic outcomes.</p><div class="measure-grid">'+rows+'</div><div class="deck-actions"><button class="btn primary" onclick="approveMeasurement()">Approve Measurement + Continue to Deck →</button></div></div>';const old=$("measurementCard");if(old)old.remove();$("o").insertAdjacentHTML("beforeend",html);$("measurementCard").scrollIntoView({behavior:"smooth"});
+ const rows=tactics.map(t=>{const digital=t.department==='Digital Media';const detail=t.kpi?'<strong>'+esc(t.kpi)+'</strong>':digital?'<span class="budget-warn">Performance KPI needed</span>':'<span class="muted">Uses department success criteria</span>';return '<div class="measure-item"><b>'+esc(t.name)+'</b><div class="muted">'+esc(t.department)+'</div><div style="margin-top:8px">'+detail+'</div></div>'}).join('');
+ const html='<div class="card" id="measurementCard"><div class="section-label">Measurement + Success Framework</div><h2>How We Will Evaluate the Strategy</h2><p class="muted">Digital Media uses performance KPIs such as ROAS, CPA/CPL, conversions and leads. Other PMC departments use the success criteria established in their approved department plans and do not require a tactic-level performance KPI.</p><div class="measure-grid">'+rows+'</div><div class="deck-actions"><button class="btn primary" onclick="approveMeasurement()">Approve Framework + Continue to Deck →</button></div></div>';const old=$("measurementCard");if(old)old.remove();$("o").insertAdjacentHTML("beforeend",html);$("measurementCard").scrollIntoView({behavior:"smooth"});
 }
 async function approveMeasurement(){
- const missing=Object.values(currentProject.tactic_allocations||{}).flat().filter(t=>t.name&&!t.kpi);if(missing.length)return alert('Add a performance KPI or appropriate success criterion to every funded tactic before approving this framework.');
- currentProject.measurement_approved=true;currentProject.status='Ready for Deck';const r=await fetch('/api/projects/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(currentProject)});if(r.ok){loadProjects();showDeck()}
+ const digital=(currentProject.tactic_allocations||{})['Digital Media']||[];const missing=digital.filter(t=>t.name&&!t.kpi);
+ if(missing.length)return alert('Digital Media still needs a performance KPI for: '+missing.map(t=>t.name).join(', ')+'. Add those KPIs in Channel + Tactic Planning, then approve this framework.');
+ currentProject.measurement_approved=true;currentProject.status='Ready for Deck';const r=await fetch('/api/projects/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(currentProject)});
+ if(!r.ok){const e=await r.json().catch(()=>({}));return alert(e.error||'Could not save measurement approval.')}
+ loadProjects();showDeck();
 }
 async function showDeck(){
  if(!currentProject.measurement_approved)return alert('Approve the measurement framework before building the deck.');
