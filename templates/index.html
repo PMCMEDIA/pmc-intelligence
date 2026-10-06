@@ -228,10 +228,9 @@ function collectDeck(){
 function moveSlide(i,dir){collectDeck();const j=i+dir;if(j<0||j>=currentProject.deck_outline.length)return;const a=currentProject.deck_outline;[a[i],a[j]]=[a[j],a[i]];renderDeckBuilder()}
 function toggleSlide(i){collectDeck();currentProject.deck_outline[i].include=currentProject.deck_outline[i].include===false;renderDeckBuilder()}
 function applyDeckTemplate(type){
- collectDeck();let slides=currentProject.deck_outline||[];
- if(type==='executive')slides=slides.filter(s=>['cover','content','investment','measurement','closing'].includes(s.type));
- if(type==='media')slides=slides.filter(s=>['cover','investment','channels','measurement','closing'].includes(s.type));
- currentProject.deck_outline=slides;renderDeckBuilder();
+ collectDeck();const slides=currentProject.deck_outline||[];
+ slides.forEach(s=>{if(type==='strategy')s.include=true;else if(type==='executive')s.include=['cover','content','investment','measurement','closing'].includes(s.type);else if(type==='media')s.include=['cover','investment','channels','measurement','closing'].includes(s.type)});
+ currentProject.deck_branding=currentProject.deck_branding||{};currentProject.deck_branding.template=type;renderDeckBuilder();
 }
 function addSlide(){collectDeck();currentProject.deck_outline.push({title:'New Slide',body:'Add presentation content here.',type:'content',include:true});renderDeckBuilder()}
 async function saveDeckOutline(){
