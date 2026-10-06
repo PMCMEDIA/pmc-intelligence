@@ -15,8 +15,7 @@ def build_strategy(project,research):
       "Organic Social":["Platform roles","Content pillars","Short-form video","Community management"],
       "Production":["Hero brand story","Vertical video","Photography","Expert / leadership interviews"],
       "Creative / Website":["Conversion paths","Landing pages","Proof + differentiation","Tracking"],
-      "PR / Communications":["Story lanes","Thought leadership","Media outreach"],
-      "Measurement":["Qualified conversions","CPA / ROAS","Attribution views","CRM / revenue reconciliation"]}
+      "PR / Communications":["Story lanes","Thought leadership","Media outreach"]}
     context = ""
     if answers:
         summary="; ".join([a.get("answer","") for a in answers[:3]])
