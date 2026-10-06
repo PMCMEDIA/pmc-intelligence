@@ -55,6 +55,11 @@ def login():
 @app.post("/api/logout")
 def logout(): session.clear(); return jsonify({"ok":True})
 
+@app.get("/logout")
+def logout_page():
+    session.clear()
+    return redirect(url_for("home"))
+
 @app.get("/api/projects")
 def projects():
     if not owner(): return jsonify({"error":"Login required"}),401
