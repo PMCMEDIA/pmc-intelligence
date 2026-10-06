@@ -41,47 +41,49 @@ input,select,textarea{width:100%;padding:12px 13px;border:1px solid #ccd8df;bord
 <div id=o></div>
 </div></main></div>
 <script>
-async function init(){try{const r=await fetch("/api/session",{cache:"no-store"});const x=await r.json();if(x.owner){showApp();await loadProjects()}}catch(e){console.error(e)}}}
-async function login(){const error=document.getElementById("loginError"),input=document.getElementById("loginEmail"),btn=document.getElementById("loginButton");error.classList.add("hidden");const email=input.value.trim().toLowerCase();if(!email.endsWith("@pmcne.com")){error.textContent="Please use your @pmcne.com email address.";error.classList.remove("hidden");return}btn.disabled=true;btn.textContent="Entering…";try{const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})});const x=await r.json();if(!r.ok)throw new Error(x.error||"Sign in failed");showApp();await loadProjects();window.scrollTo(0,0)}catch(e){error.textContent=e.message;error.classList.remove("hidden")}finally{btn.disabled=false;btn.textContent="Enter PMC Intelligence →"}}
-function showApp(){document.getElementById("loginScreen").classList.add("hidden");document.getElementById("appWorkspace").classList.remove("hidden")}
-async function logout(){await fetch("/api/logout",{method:"POST"});window.currentProject=null;document.getElementById("appWorkspace").classList.add("hidden");document.getElementById("loginScreen").classList.remove("hidden");document.getElementById("o").innerHTML=""}
-async function loadProjects(){let r=await fetch("/api/projects");if(!r.ok)return;let items=await r.json();projectList.innerHTML=items.length?items.map(p=>`<div class="project-row"><div><h3>${esc(p.client)}</h3><div class="project-meta">${esc(p.status)} • Updated ${new Date(p.updated_at).toLocaleString()}</div></div><button class="btn" onclick="openProject(\'${p.id}\')">Open Project →</button></div>`).join(""):`<p class="muted">No saved projects yet. Start a client strategy below.</p>`}
-async function openProject(id){let r=await fetch("/api/projects/"+id);let p=await r.json();if(!r.ok)return;renderProject(p);window.scrollTo({top:document.getElementById("o").offsetTop-30,behavior:"smooth"})}
-function renderProject(p){let facts=p.strategy.facts.length?p.strategy.facts.map(x=>`<div class="fact"><b>${esc(x.source)}</b><strong>${esc(x.label)}</strong><div class="muted">${esc(x.value)}</div></div>`).join(""):`<p class="muted">No website facts were extracted. Discovery input will be especially important.</p>`;window.currentProject=p;let saved={};(p.discovery_answers||[]).forEach(x=>saved[x.question]=x.answer);let qs=p.questions.map((x,n)=>`<div class="discovery-item"><label><span class="section-label">Question ${n+1}</span><br>${esc(x)}</label><textarea class="discovery-answer" data-question="${esc(x)}" placeholder="Enter the client answer, meeting notes, or PMC context here...">${esc(saved[x]||"")}</textarea></div>`).join("");let ds=Object.entries(p.strategy.departments).map(([k,v])=>`<div class="dept"><h3>${esc(k)}</h3><p>${v.map(esc).join(" • ")}</p></div>`).join("");o.innerHTML=`<div class="card"><div class="section-label">Saved Project • ${esc(p.client)}</div><h2>What we know so far</h2><div class="facts">${facts}</div><div class="notice">This project is saved to your PMC Intelligence workspace and can be reopened later.</div></div><div class="card"><div class="section-label">Discovery</div><h2>Answer Discovery Questions</h2><p class="muted">Capture client answers and internal notes directly in the workspace.</p><div class="discovery-list">${qs}</div><div style="margin-top:18px"><button class="btn primary" onclick="saveDiscovery()">Save Answers + Update Strategy Context</button><span id="saveState" class="save-state"></span></div></div><div class="card" id="strategyCard"><div class="section-label">Integrated Strategy</div><h2>Executive Direction</h2><p>${esc(p.strategy.executive)}</p><h2 style="margin-top:28px">Department Framework</h2><div class="dept-grid">${ds}</div><div style="margin-top:22px"><button class="btn primary" onclick="document.getElementById(&quot;investment&quot;).scrollIntoView({behavior:&quot;smooth&quot;})">Approve + Continue to Investment →</button></div></div>${buildInvestment(p)}`}
-
-async function build(){
-o.innerHTML='<div class="card loading"><div class="spinner"></div><div><b>Researching client website…</b><div class="muted">Building the initial PMC strategy workspace.</div></div></div>';
-try{
-let r=await fetch('/api/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({client:c.value||'New Client',url:u.value,industry:i.value,budget:b.value||'TBD',goal:g.value||'Grow qualified demand'})});
-let p=await r.json();
-window.currentProject=p; renderProject(p); loadProjects();
-}catch(e){o.innerHTML='<div class="card"><h2>Something went wrong</h2><p class="muted">'+e+'</p></div>'}
-}
-
-async function saveDiscovery(){
- const answers=[...document.querySelectorAll('.discovery-answer')].map(el=>({question:el.dataset.question,answer:el.value.trim()}));
- if(!window.currentProject)return;
- window.currentProject.discovery_answers=answers;
-
- const filled=answers.filter(x=>x.answer).length;
- const state=document.getElementById('saveState'); state.textContent='Updating strategy…';
+let currentProject=null;
+const $=id=>document.getElementById(id);
+function esc(v){return String(v||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function showApp(){ $("loginScreen").classList.add("hidden"); $("appWorkspace").classList.remove("hidden"); }
+async function login(){
+ const email=$("loginEmail").value.trim().toLowerCase(), err=$("loginError"), btn=$("loginButton");
+ err.classList.add("hidden");
+ if(!email.endsWith("@pmcne.com")){err.textContent="Please use your @pmcne.com email address.";err.classList.remove("hidden");return}
+ btn.disabled=true;btn.textContent="Entering…";
  try{
-   let r=await fetch('/api/projects/refine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(window.currentProject)});
-   let data=await r.json(); window.currentProject=data.project||window.currentProject; window.currentProject.strategy=data.strategy;
-   const ds=Object.entries(data.strategy.departments).map(([k,v])=>'<div class="dept"><h3>'+k+'</h3><p>'+v.join(' • ')+'</p></div>').join('');
-   document.getElementById('strategyCard').innerHTML='<div class="section-label">Integrated Strategy • Updated from Discovery</div><h2>Executive Direction</h2><p>'+esc(data.strategy.executive)+'</p><h2 style="margin-top:28px">Department Framework</h2><div class="dept-grid">'+ds+'</div><div class="notice">'+filled+' discovery answer'+(filled===1?'':'s')+' now inform this strategy. Verified research remains labeled separately from client-provided inputs.</div><div style="margin-top:22px"><button class="btn">Edit Strategy</button> <button class="btn primary" onclick="document.getElementById(&quot;investment&quot;).scrollIntoView({behavior:&quot;smooth&quot;})">Approve + Continue to Investment →</button></div>';
-   state.textContent='✓ Saved '+filled+' of '+answers.length+' answers + strategy updated'; loadProjects();
-   document.querySelectorAll('.step')[1].classList.toggle('done',filled>0); document.querySelectorAll('.step')[2].classList.add('done');
- }catch(e){state.textContent='Could not update strategy. Answers are saved locally.'}
+  const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})});
+  const x=await r.json();
+  if(!r.ok) throw new Error(x.error||"Sign in failed");
+  showApp(); await loadProjects();
+ }catch(ex){err.textContent=ex.message||"Could not sign in.";err.classList.remove("hidden")}
+ finally{btn.disabled=false;btn.textContent="Enter PMC Intelligence →"}
 }
-function buildInvestment(p){
- let raw=String(p.budget||'').replace(/[^0-9.]/g,''); let budget=parseFloat(raw)||100000;
- let mix=[['Paid Search',30],['Paid Social',25],['Performance Media',20],['SEO + AEO',15],['Creative / Testing',10]];
- let rows=mix.map(x=>'<div class="alloc-row"><b>'+x[0]+'</b><div class="bar"><i style="width:'+x[1]+'%"></i></div><span>'+x[1]+'%</span></div>').join('');
- let money=n=>'$'+Math.round(n).toLocaleString();
- return '<div class="card" id="investment"><div class="section-label">Investment</div><h2>Recommended Investment Framework</h2><p class="muted">A working allocation model tied to the strategy. Adjust before client presentation.</p><div class="metric-grid"><div class="metric"><b>'+money(budget)+'</b><span>Working Budget</span></div><div class="metric"><b>5</b><span>Core Channels</span></div><div class="metric"><b>70%</b><span>Demand Capture + Creation</span></div><div class="metric"><b>30%</b><span>Brand + Growth Support</span></div></div><div class="alloc">'+rows+'</div><div class="notice">Planning model only. Final channel minimums, production costs, geography and campaign duration should be validated by PMC before client delivery.</div><div class="deck-actions"><button class="btn">Edit Allocation</button><button class="btn primary" onclick="document.getElementById('deck').scrollIntoView({behavior:'smooth'})">Approve + Build Deck →</button></div></div><div class="card" id="deck"><div class="section-label">Deck Builder</div><h2>PMC Strategy Presentation</h2><div class="deck-preview"><small>PMC Intelligence • Strategy Draft</small><h3>'+esc(p.client||'Client')+' Growth Strategy</h3><p>Executive direction, market intelligence, integrated department recommendations, investment framework and measurement plan.</p><div class="deck-actions"><button class="btn primary">Generate PMC Deck</button><button class="btn" style="background:#203d51">Review Measurement Plan</button></div></div></div>';
+async function logout(){await fetch("/api/logout",{method:"POST"});location.reload()}
+async function loadProjects(){
+ const r=await fetch("/api/projects"); if(!r.ok)return;
+ const items=await r.json();
+ $("projectList").innerHTML=items.length?items.map(p=>'<div class="project-row"><div><h3>'+esc(p.client)+'</h3><div class="project-meta">'+esc(p.status||"Draft")+'</div></div><button class="btn" onclick="openProject(\''+p.id+'\')">Open Project →</button></div>').join(""):'<p class="muted">No saved projects yet. Start a client strategy below.</p>';
 }
-function esc(v){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-document.getElementById("loginEmail").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+async function openProject(id){const r=await fetch("/api/projects/"+id);if(!r.ok)return;renderProject(await r.json())}
+async function build(){
+ $("o").innerHTML='<div class="card loading"><div class="spinner"></div><div><b>Researching client website…</b></div></div>';
+ const payload={client:$("c").value||"New Client",url:$("u").value,industry:$("i").value,budget:$("b").value||"TBD",goal:$("g").value||"Grow qualified demand"};
+ try{const r=await fetch("/api/projects",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});const p=await r.json();if(!r.ok)throw new Error(p.error||"Could not create project");renderProject(p);loadProjects()}catch(ex){$("o").innerHTML='<div class="card"><h2>Something went wrong</h2><p>'+esc(ex.message)+'</p></div>'}
+}
+function renderProject(p){
+ currentProject=p;
+ const facts=(p.strategy.facts||[]).map(x=>'<div class="fact"><b>'+esc(x.source)+'</b><strong>'+esc(x.label)+'</strong><div class="muted">'+esc(x.value)+'</div></div>').join("");
+ const qs=(p.questions||[]).map((q,n)=>'<div class="discovery-item"><label>Question '+(n+1)+'<br>'+esc(q)+'</label><textarea class="discovery-answer" data-question="'+esc(q)+'"></textarea></div>').join("");
+ const ds=Object.entries(p.strategy.departments||{}).map(([k,v])=>'<div class="dept"><h3>'+esc(k)+'</h3><p>'+v.map(esc).join(" • ")+'</p></div>').join("");
+ $("o").innerHTML='<div class="card"><div class="section-label">Research</div><h2>What we know so far</h2><div class="facts">'+facts+'</div></div><div class="card"><div class="section-label">Discovery</div><h2>Answer Discovery Questions</h2><div class="discovery-list">'+qs+'</div><button class="btn primary" onclick="saveDiscovery()">Save Answers + Update Strategy</button></div><div class="card"><div class="section-label">Integrated Strategy</div><h2>Executive Direction</h2><p>'+esc(p.strategy.executive)+'</p><div class="dept-grid">'+ds+'</div></div>';
+}
+async function saveDiscovery(){
+ if(!currentProject)return;
+ currentProject.discovery_answers=[...document.querySelectorAll(".discovery-answer")].map(el=>({question:el.dataset.question,answer:el.value.trim()}));
+ const r=await fetch("/api/projects/refine",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(currentProject)});
+ if(r.ok){const d=await r.json();currentProject=d.project;renderProject(currentProject);loadProjects()}
+}
+async function init(){try{const r=await fetch("/api/session",{cache:"no-store"});const x=await r.json();if(x.owner){showApp();loadProjects()}}catch(e){}}
+$("loginEmail").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
 init();
 </script></body></html>
