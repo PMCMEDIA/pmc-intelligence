@@ -19,6 +19,6 @@ def forecast(project):
  for label,(cpc,cvr) in zip(labels,combos):
   clicks=search/cpc; conv=clicks*cvr; cpa=search/conv if conv else 0
   scenarios.append({"scenario":label,"search_budget":round(search),"cpc":round(cpc,2),"clicks":round(clicks),"conversion_rate":round(cvr*100,1),"conversions":round(conv),"cpa":round(cpa)})
- return {"source_type":"Modeled Assumption","confidence":"Low until client/PMC benchmarks are supplied","scenarios":scenarios,
- "assumptions":["Illustrative planning defaults only","Replace with client historical performance first","Then PMC comparable campaign benchmarks","External benchmarks only when stronger evidence is unavailable"],
+ return {"source_type":"Modeled Assumption","confidence":"Planning estimate based on industry benchmarks","scenarios":scenarios,
+ "assumptions":["Illustrative planning defaults only","Use current industry benchmarks only","Retain source and benchmark date","Do not use PMC historical campaign data"],
  "roi_ready":False,"roi_note":"ROAS/ROI requires a defensible customer value or revenue input and close-rate assumptions."}
