@@ -1,4 +1,4 @@
-from flask import Flask,request,jsonify,render_template,session
+from flask import Flask,request,jsonify,render_template,session,redirect,url_for
 from research_engine import research_url,discovery_questions
 from strategy_engine import build_strategy
 from storage import init_db,save,all_for,get
@@ -11,7 +11,15 @@ init_db()
 def owner(): return session.get("owner")
 
 @app.get("/")
-def home(): return render_template("index.html")
+def home(): return render_template("index.html", logged_in=bool(owner()), login_error=request.args.get("error",""))
+
+@app.post("/enter")
+def enter():
+    email=(request.form.get("email") or "").strip().lower()
+    if not email.endswith("@pmcne.com"):
+        return redirect(url_for("home", error="Please use your @pmcne.com email address."))
+    session["owner"]=email
+    return redirect(url_for("home"))
 
 @app.get("/api/session")
 def session_info(): return jsonify({"owner":owner()})
