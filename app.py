@@ -26,6 +26,7 @@ def clean_project(p):
     p["goal"]=(p.get("goal") or "").strip()[:3000]
     p["budget"]=(p.get("budget") or "TBD").strip()[:100]
     p["url"]=(p.get("url") or "").strip()[:1000]
+    p["strategy_context"]=(p.get("strategy_context") or "").strip()[:20000]
     return p
 
 @app.get("/")
@@ -78,8 +79,8 @@ def create():
     if not p["client"]: return jsonify({"error":"Client name is required"}),400
     research=research_url(p.get("url",""))
     result={"id":str(uuid.uuid4())[:8],**p,"research":research,
-      "questions":discovery_questions(research,p.get("industry","Other")),
-      "strategy":build_strategy(p,research),"status":"Strategy Draft"}
+      "questions":discovery_questions(research,p.get("industry","Other"),p),
+      "strategy":build_strategy(p,research),"workflow_version":2,"status":"AI Strategy Draft"}
     save(owner(),result); return jsonify(result)
 
 @app.post("/api/projects/refine")
@@ -141,7 +142,7 @@ def export_deck(pid):
     if not owner(): return jsonify({"error":"Login required"}),401
     p=get(owner(),pid)
     if not p: return jsonify({"error":"Project not found"}),404
-    if not p.get("measurement_approved"): return jsonify({"error":"Measurement and success framework must be approved before export"}),400
+    if p.get("workflow_version",1)<2 and not p.get("measurement_approved"): return jsonify({"error":"Measurement and success framework must be approved before export"}),400
     if not p.get("deck_outline"): p["deck_outline"]=default_outline(p); save(owner(),p)
     if not any(x.get("include",True) for x in p.get("deck_outline",[])): return jsonify({"error":"Deck must include at least one slide"}),400
     try: stream=build_pptx(p)
