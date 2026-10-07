@@ -15,19 +15,24 @@ def _rgb(v,fallback):
 
 def default_outline(p):
     out=[{"title":str(p.get("client","Client"))+" Strategy","body":"Integrated Marketing Strategy\nPrepared by PMC Media Group","type":"cover","include":True},{"title":"Executive Direction","body":p.get("strategy",{}).get("executive",""),"type":"content","include":True}]
-    facts=p.get("strategy",{}).get("facts",[])[:6]; out.append({"title":"Research + Discovery","body":"\n".join(["• "+str(x.get("label"))+": "+str(x.get("value")) for x in facts]),"type":"content","include":True})
+    n=p.get("strategy",{}).get("narrative",{})
+    if n: out.append({"title":"The Strategic Opportunity","body":"THE OPPORTUNITY\n"+n.get("opportunity","")+"\n\nTHE CHALLENGE\n"+n.get("challenge","")+"\n\nOUR STRATEGIC RESPONSE\n"+n.get("strategic_response",""),"type":"content","include":True})
+    facts=p.get("strategy",{}).get("facts",[])[:6]; out.append({"title":"What Informs the Strategy","body":"\n".join(["• "+str(x.get("label"))+": "+str(x.get("value")) for x in facts]),"type":"content","include":True})
     comp=p.get("competitive_intelligence") or {}
     if comp.get("candidates"): out.append({"title":"Competitive Landscape","body":"","type":"competitive","include":True})
     outlook=p.get("campaign_outlook") or {}
     if outlook.get("scenarios"): out.append({"title":"Benchmark + Campaign Outlook","body":"","type":"forecast","include":True})
     if outlook.get("roi_ready"): out.append({"title":"ROI / ROAS Scenario Outlook","body":"","type":"roi","include":True})
+    sections=p.get("strategy",{}).get("department_sections",{})
     for name,recs in p.get("strategy",{}).get("departments",{}).items():
-        d=p.get("department_details",{}).get(name,{}); body=[]
-        if d.get("objective"): body.append("OBJECTIVE\n"+d["objective"])
-        if recs: body.append("RECOMMENDATIONS\n"+"\n".join(["• "+x for x in recs]))
-        if d.get("deliverables"): body.append("DELIVERABLES\n"+d["deliverables"])
-        if d.get("kpis"): body.append("SUCCESS CRITERIA\n"+d["kpis"])
-        out.append({"title":name,"body":"\n\n".join(body),"type":"department","include":True})
+        d=sections.get(name,{})
+        if d:
+            body=["OBJECTIVE\n"+d.get("objective",""),"OPPORTUNITY / CHALLENGE\n"+d.get("opportunity",""),"STRATEGIC RESPONSE\n"+d.get("response",""),"RECOMMENDED TACTICS\n"+"\n".join(["• "+x for x in d.get("tactics",recs)]),"WHY IT MATTERS\n"+d.get("rationale",""),"INVESTMENT ROLE\n"+d.get("investment_role",""),"EXPECTED OUTCOME\n"+d.get("outcome",""),"SUCCESS CRITERIA\n"+d.get("success","")]
+        else:
+            legacy=p.get("department_details",{}).get(name,{}); body=[]
+            if legacy.get("objective"): body.append("OBJECTIVE\n"+legacy["objective"])
+            if recs: body.append("RECOMMENDATIONS\n"+"\n".join(["• "+x for x in recs]))
+        out.append({"title":name,"body":"\n\n".join([x for x in body if x.strip()]),"type":"department","department":name,"include":True})
     if p.get("investment_allocations"): out.append({"title":"Investment Framework","body":"","type":"investment","include":True})
     if p.get("tactic_allocations"): out.extend([{"title":"Channel + Tactic Plan","body":"","type":"channels","include":True},{"title":"Measurement + Success Framework","body":"","type":"measurement","include":True}])
     out.append({"title":"Next Steps","body":"• Confirm launch priorities and timing\n• Finalize production and implementation requirements\n• Activate measurement and reporting plan","type":"closing","include":True}); return out
