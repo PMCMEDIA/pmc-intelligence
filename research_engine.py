@@ -23,15 +23,15 @@ def research_url(url):
     except Exception as e:
         return {"ok":False,"url":url,"error":str(e)}
 
-def discovery_questions(research,industry):
-    q=["What business outcome must this strategy influence?",
-       "Which services, products, locations or profit centers are highest priority?",
-       "What markets should PMC prioritize or avoid?",
-       "What investment range is realistic?",
-       "Which channels are active today and what performance is known?",
-       "What counts as a qualified conversion?",
-       "What capacity, compliance, seasonality or operational constraints matter?"]
-    if not research.get("ok"): q.insert(0,"What are the client's core offerings and differentiators?")
-    if industry=="Healthcare": q.append("Which clinical/provider content requires client or clinical approval?")
-    if industry=="Restaurant / Hospitality": q.append("Which locations, dayparts, concepts and private-event opportunities are highest priority?")
-    return q
+def discovery_questions(research,industry,project=None):
+    p=project or {}; context=" ".join([str(p.get("goal","")),str(p.get("budget","")),str(p.get("strategy_context",""))]).lower()
+    gaps=[]
+    def missing(terms): return not any(t in context for t in terms)
+    if missing(["budget","investment","$"]) and str(p.get("budget","TBD")).upper()=="TBD":
+        gaps.append({"question":"What investment range should the strategy plan around?","reason":"Needed to build an actionable investment model.","required":False})
+    if missing(["priority","service line","product","location","profit center"]):
+        gaps.append({"question":"Are there specific services, products, locations or profit centers that must be prioritized?","reason":"Only needed if priorities are not already clear from the supplied context or public research.","required":False})
+    if missing(["capacity","availability","constraint","season"]):
+        gaps.append({"question":"Are there capacity, seasonality or operational constraints that should limit demand generation?","reason":"This can materially change media intensity and timing and usually is not public.","required":False})
+    gaps.append({"question":"Do we have a defensible lead/customer value or close rate for ROI modeling?","reason":"Optional. Needed only if the client wants revenue, ROAS or ROI projections.","required":False})
+    return gaps[:4]
