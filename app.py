@@ -6,13 +6,14 @@ from competitive_engine import competitive_intelligence
 from forecast_engine import forecast
 from deck_engine import default_outline,build_pptx
 from flask import send_file
+from master_deck import master_status, install_master, proposal_plan
 from website_engine import analyze as analyze_website, compare as compare_websites
 import os, uuid, re
 from urllib.parse import urlparse
 
 app=Flask(__name__)
 app.secret_key=os.getenv("SECRET_KEY","pmc-intelligence-development-key")
-app.config.update(SESSION_COOKIE_HTTPONLY=True,SESSION_COOKIE_SAMESITE="Lax",MAX_CONTENT_LENGTH=2*1024*1024)
+app.config.update(SESSION_COOKIE_HTTPONLY=True,SESSION_COOKIE_SAMESITE="Lax",MAX_CONTENT_LENGTH=26*1024*1024)
 init_db()
 
 def owner(): return session.get("owner")
@@ -173,6 +174,31 @@ def website_analysis(pid):
     p["website_analysis"]=result
     save(owner(),p)
     return jsonify(result)
+
+
+@app.get("/api/master-deck/status")
+def master_deck_status():
+    if not owner(): return jsonify({"error":"Login required"}),401
+    return jsonify(master_status())
+
+@app.get("/api/projects/<pid>/master-plan")
+def master_deck_plan(pid):
+    if not owner(): return jsonify({"error":"Login required"}),401
+    p=get(owner(),pid)
+    if not p: return jsonify({"error":"Project not found"}),404
+    return jsonify(proposal_plan(p))
+
+@app.post("/api/master-deck/upload")
+def upload_master_deck():
+    if not owner(): return jsonify({"error":"Login required"}),401
+    admins={x.strip().lower() for x in os.getenv("PMC_TEMPLATE_ADMINS","").split(",") if x.strip()}
+    if not admins or owner().lower() not in admins:
+        return jsonify({"error":"Template upload requires an authorized PMC administrator configured in PMC_TEMPLATE_ADMINS."}),403
+    upload=request.files.get("master")
+    if not upload or not upload.filename.lower().endswith(".pptx"):
+        return jsonify({"error":"Choose a .pptx file."}),400
+    try: return jsonify(install_master(upload))
+    except Exception as exc: return jsonify({"error":str(exc)}),400
 
 @app.get("/health")
 def health():
