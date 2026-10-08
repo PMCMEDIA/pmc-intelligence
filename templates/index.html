@@ -142,7 +142,49 @@ function renderWebsiteEstimator(){
  const mount=document.getElementById('websiteEstimatorMount');if(!mount)return;const p=websitePricing();const field=(label,key,type='number')=>'<div class="field"><label>'+label+'</label><input type="'+type+'" min="0" id="web_'+key+'" value="'+esc(String(p[key]??''))+'" oninput="updateWebsitePricing(\''+key+'\',this.value)"></div>';
  mount.innerHTML='<div class="website-estimator"><div class="section-label">Website Development Estimator</div><h3>Website Scope & Investment</h3><p class="muted">Editable preliminary estimate. $850 per development page is the PMC default. Discovery and mockup fees are placeholders until approved.</p><div class="website-price" id="websitePriceTotal"></div><div class="website-fields">'+field('Client website URL','url','url')+field('Development pages','pages')+field('Development rate per page ($)','page_rate')+field('Discovery & sitemap fee ($)','discovery')+field('Unique mockup / wireframe templates','templates')+field('Mockup fee per template ($)','mockup_rate')+field('Additional technical functionality ($)','technical')+field('Manual discount / adjustment ($)','adjustment')+'</div><table class="website-summary"><tbody><tr><td>Discovery & Sitemap</td><td id="websiteTotal_discovery"></td></tr><tr><td>Mockups & Wireframing</td><td id="websiteTotal_design"></td></tr><tr><td>Website Development</td><td id="websiteTotal_development"></td></tr><tr><td>Technical Functionality</td><td id="websiteTotal_technical"></td></tr></tbody></table><div class="field"><label>Scope notes / page exclusions / integration assumptions</label><textarea oninput="updateWebsitePricing(\'notes\',this.value)">'+esc(p.notes||'')+'</textarea></div><div class="strategy-actions"><button class="btn primary" onclick="saveWebsiteEstimate()">Save Website Estimate</button><button class="btn" onclick="copyWebsiteEstimate()">Copy Estimate</button></div><span class="save-state" id="websiteSaveState"></span></div>';
  for(const k of ['pages','page_rate','discovery','templates','mockup_rate','technical','adjustment'])updateWebsitePricing(k,p[k]);
+ renderWebsiteScanPanel();
 }
+
+function renderWebsiteScanPanel(){
+ const mount=document.getElementById('websiteEstimatorMount');
+ if(!mount)return;
+ const panel=document.createElement('div');
+ panel.className='website-estimator';
+ const heading=document.createElement('h3');heading.textContent='Website & Competitor Research';panel.appendChild(heading);
+ const label=document.createElement('label');label.textContent='Competitor URLs, one per line (up to five)';panel.appendChild(label);
+ const input=document.createElement('textarea');input.id='websiteCompetitorUrls';panel.appendChild(input);
+ const button=document.createElement('button');button.className='btn primary';button.textContent='Scan Website & Competitors';panel.appendChild(button);
+ const results=document.createElement('div');results.id='websiteScanResults';panel.appendChild(results);
+ mount.appendChild(panel);
+ button.addEventListener('click',async()=>{
+  results.textContent='Scanning public website and competitors...';
+  const competitors=input.value.split(String.fromCharCode(10)).map(v=>v.trim()).filter(Boolean).slice(0,5);
+  try{
+   const response=await fetch('/api/projects/'+encodeURIComponent(currentProject.id)+'/website-analysis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:websitePricing().url,competitors})});
+   const data=await response.json();
+   if(!response.ok)throw Error(data.error||'Scan failed');
+   currentProject.website_analysis=data;
+   showWebsiteResults(data);
+  }catch(error){results.textContent=error.message}
+ });
+ if(currentProject.website_analysis)showWebsiteResults(currentProject.website_analysis);
+}
+function showWebsiteResults(data){
+ const results=document.getElementById('websiteScanResults');if(!results)return;
+ results.replaceChildren();
+ const line=(tag,value)=>{const el=document.createElement(tag);el.textContent=value;results.appendChild(el);return el};
+ line('h4','Sitemap: '+data.url_count+' public URLs');
+ line('p','URL count is not the number of billable development pages. Review before estimating.');
+ const button=line('button','Use as preliminary page count');button.className='btn';
+ button.addEventListener('click',()=>{const n=Number(data.url_count)||0;websitePricing().pages=n;const input=document.getElementById('web_pages');if(input)input.value=n;updateWebsitePricing('pages',n)});
+ line('h4','Observed functionality (requires verification)');
+ (data.observed_features||[]).forEach(x=>line('p',x.feature));
+ line('h4','Industry recommendations');
+ (data.recommendations||[]).forEach(x=>line('p',x.feature+' — '+x.reason));
+ line('h4','Competitor research');
+ (data.competitors||[]).forEach(x=>line('p',(x.title||x.url)+' — '+x.status+' — '+(x.url_count??'unknown')+' public URLs'));
+}
+
 async function saveWebsiteEstimate(){const e=document.getElementById('websiteSaveState');if(e)e.textContent='Saving…';try{const r=await fetch('/api/projects/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(currentProject)});if(!r.ok)throw Error('Save failed');if(e)e.textContent='✓ Estimate saved to project'}catch(err){if(e)e.textContent='Could not save. Please retry.'}}
 function copyWebsiteEstimate(){const p=websitePricing(),t=websiteTotals(),total=Math.max(0,t.development+t.design+t.discovery+t.technical-t.adjustment);const text=['PMC Website Estimate','Development pages: '+p.pages,'Page rate: '+websiteMoney(p.page_rate),'Discovery & Sitemap: '+websiteMoney(t.discovery),'Mockups & Wireframing: '+websiteMoney(t.design),'Development: '+websiteMoney(t.development),'Technical Functionality: '+websiteMoney(t.technical),'Adjustment: -'+websiteMoney(t.adjustment),'Total: '+websiteMoney(total),'Notes: '+(p.notes||'')].join('\\n');navigator.clipboard.writeText(text).then(()=>{const e=document.getElementById('websiteSaveState');if(e)e.textContent='✓ Copied'}).catch(()=>alert(text))}
 
