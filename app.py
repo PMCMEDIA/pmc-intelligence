@@ -7,6 +7,7 @@ from forecast_engine import forecast
 from deck_engine import default_outline,build_pptx
 from flask import send_file
 from website_engine import analyze as analyze_website, compare as compare_websites
+from workspace_api import workspace
 import os, uuid, re
 from urllib.parse import urlparse
 
@@ -14,6 +15,7 @@ app=Flask(__name__)
 app.secret_key=os.getenv("SECRET_KEY","pmc-intelligence-development-key")
 app.config.update(SESSION_COOKIE_HTTPONLY=True,SESSION_COOKIE_SAMESITE="Lax",MAX_CONTENT_LENGTH=2*1024*1024)
 init_db()
+app.register_blueprint(workspace)
 
 def owner(): return session.get("owner")
 
@@ -28,10 +30,16 @@ def clean_project(p):
     p["budget"]=(p.get("budget") or "TBD").strip()[:100]
     p["url"]=(p.get("url") or "").strip()[:1000]
     p["strategy_context"]=(p.get("strategy_context") or "").strip()[:20000]
+    p["workspace_mode"]="advanced" if p.get("workspace_mode")=="advanced" else "ai"
     return p
 
 @app.get("/")
-def home(): return render_template("index.html", logged_in=bool(owner()), login_error=request.args.get("error",""))
+def home(): return render_template("workspace.html", logged_in=bool(owner()), login_error=request.args.get("error",""))
+
+@app.get("/classic")
+def classic_workspace():
+    # Keep the previous interface available without changing saved project data.
+    return render_template("index.html", logged_in=bool(owner()), login_error=request.args.get("error",""))
 
 @app.post("/enter")
 def enter():
@@ -179,8 +187,8 @@ def health():
     try:
         from storage import db
         with db() as conn: conn.execute("SELECT 1").fetchone()
-        return {"ok":True,"version":"github-v7-production","database":"ok"}
+        return {"ok":True,"version":"workspace-modes-1","database":"ok","commit":os.getenv("RENDER_GIT_COMMIT","")}
     except Exception:
-        return {"ok":False,"version":"github-v7-production","database":"error"},503
+        return {"ok":False,"version":"workspace-modes-1","database":"error"},503
 
 if __name__=="__main__": app.run(host="0.0.0.0",port=5000,debug=True)

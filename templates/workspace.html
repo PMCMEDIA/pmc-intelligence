@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>PMC Intelligence | Strategy Workspace</title>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('pmc-theme')==='dark'?'dark':'light'}catch(e){document.documentElement.dataset.theme='light'}</script>
+<link rel="stylesheet" href="{{ url_for('static', filename='workspace_modes.css') }}?v=modes-1">
+</head>
+<body>
+<header class="app-header">
+ <a class="brand" href="/" aria-label="PMC Intelligence home"><img src="{{ url_for('static', filename='pmc-intelligence-logo.png') }}" alt="PMC Intelligence"><span>Strategy workspace</span></a>
+ <div class="header-actions"><button id="themeToggle" type="button">Dark mode</button>{% if logged_in %}<a class="button" href="/logout">Sign out</a>{% endif %}</div>
+</header>
+{% if not logged_in %}
+<main class="login-layout">
+ <section><p class="eyebrow">PMC STRATEGY OPERATING SYSTEM</p><h1>Strategy starts here.</h1><p class="lead">Start with a generated strategy preview. Open the advanced controls only when you need them.</p><p>Client brief → Strategy preview → Draft deck → Department review</p></section>
+ <section class="card"><h2>Welcome back</h2><p>Sign in with your PMC email to open a shared project or start a new strategy.</p><form method="post" action="/enter"><label for="loginEmail">PMC email</label><input id="loginEmail" name="email" type="email" autocomplete="email" placeholder="yourname@pmcne.com" required><button class="primary" type="submit">Enter PMC Intelligence</button></form>{% if login_error %}<p class="error" role="alert">{{ login_error }}</p>{% endif %}</section>
+</main>
+{% else %}
+<main id="workspace" data-release="workspace-modes-1">
+ <section class="workspace-heading"><div><p class="eyebrow">ONE PROJECT. TWO WAYS TO WORK.</p><h1 id="pageTitle">Build a smarter strategy.</h1></div><div id="modeSwitch" class="mode-switch" role="group" aria-label="Workspace mode"><button type="button" data-mode="ai" aria-pressed="true">AI Strategy</button><button type="button" data-mode="advanced" aria-pressed="false">Advanced Builder</button></div></section>
+ <p id="modeDescription" class="muted">Review the generated recommendation first. Use Advanced Builder for detailed edits, budgets and technical controls.</p>
+ <div id="workspaceMessage" class="message" role="status" aria-live="polite" hidden></div>
+ <details class="card project-drawer" id="projectsDrawer" open><summary>Shared projects &amp; new strategy</summary><div class="project-home"><section><h2>PMC team projects</h2><div id="projectList" aria-live="polite">Loading projects…</div></section><section><h2>New client strategy</h2><form id="intakeForm"><div class="field-grid"><label>Client name<input name="client" required maxlength="160" autocomplete="organization"></label><label>Website<input name="url" placeholder="https://client.com" inputmode="url" maxlength="1000"></label><label>Industry<input name="industry" placeholder="e.g. Healthcare" maxlength="100"></label><label>Budget guidance<input name="budget" placeholder="Amount + period, or TBD" maxlength="100"></label></div><label>Business objective<textarea name="goal" maxlength="3000" placeholder="What should this strategy accomplish?"></textarea></label><label>Intake notes &amp; client context<textarea name="strategy_context" maxlength="20000" placeholder="Paste account-manager notes, known deliverables, restrictions and priorities."></textarea></label><button type="submit" class="primary">Generate strategy preview</button><p class="muted small">Optional discovery questions do not block the preview or draft deck.</p></form></section></div></details>
+ <section id="projectHeader" class="project-header" hidden><div><p id="projectMeta" class="muted"></p><nav id="screenNav" aria-label="Project workflow"><button type="button" data-screen="strategy">1 · Strategy</button><button type="button" data-screen="deck">2 · Draft deck</button><button type="button" data-screen="review">3 · Review</button></nav></div><span id="saveState" role="status">Saved</span></section>
+ <div id="projectContent"><section class="card empty-state"><h2>Start with the strategy, not a questionnaire.</h2><p>Open a team project above, or enter the client brief. AI Strategy shows the current generated draft. Advanced Builder gives specialists deeper control over that same project.</p></section></div>
+ <footer id="projectActions" class="project-actions" hidden><span id="projectStatus"></span><div><button type="button" id="saveProject">Save project</button><button type="button" id="buildDeck" class="primary">Build draft deck</button></div></footer>
+</main>
+<dialog id="suggestionDialog" aria-labelledby="suggestionTitle"><h2 id="suggestionTitle">Review proposed changes</h2><p id="suggestionNote" class="muted"></p><div class="comparison"><section><h3>Current section</h3><pre id="currentSuggestion"></pre></section><section><h3>Suggested replacement</h3><pre id="newSuggestion"></pre></section></div><div class="actions"><button type="button" id="keepCurrent">Keep current</button><button type="button" id="applySuggestion" class="primary">Apply this section only</button></div></dialog>
+<script defer src="{{ url_for('static', filename='workspace_modes.js') }}?v=modes-1"></script>
+{% endif %}
+<script>document.getElementById('themeToggle').addEventListener('click',function(){const mode=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=mode;this.textContent=mode==='dark'?'Light mode':'Dark mode';try{localStorage.setItem('pmc-theme',mode)}catch(e){}});document.getElementById('themeToggle').textContent=document.documentElement.dataset.theme==='dark'?'Light mode':'Dark mode';</script>
+</body>
+</html>
