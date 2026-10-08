@@ -6,6 +6,7 @@ from competitive_engine import competitive_intelligence
 from forecast_engine import forecast
 from deck_engine import default_outline,build_pptx
 from flask import send_file
+from website_engine import analyze as analyze_website, compare as compare_websites
 import os, uuid, re
 from urllib.parse import urlparse
 
@@ -151,6 +152,27 @@ def export_deck(pid):
         return jsonify({"error":"PowerPoint export failed. Please review the deck and try again."}),500
     name="".join(ch if ch.isalnum() or ch in " -_" else "" for ch in p.get("client","Client")).strip()+"_PMC_Strategy.pptx"
     return send_file(stream,as_attachment=True,download_name=name,mimetype="application/vnd.openxmlformats-officedocument.presentationml.presentation")
+
+
+@app.post("/api/projects/<pid>/website-analysis")
+def website_analysis(pid):
+    if not owner(): return jsonify({"error":"Login required"}),401
+    p=get(owner(),pid)
+    if not p: return jsonify({"error":"Project not found"}),404
+    data=request.get_json(silent=True) or {}
+    url=(data.get("url") or (p.get("website_pricing") or {}).get("url") or p.get("url") or "").strip()
+    if not url: return jsonify({"error":"Enter a website URL."}),400
+    competitors=data.get("competitors") or []
+    if not isinstance(competitors,list): return jsonify({"error":"Competitors must be a list of URLs."}),400
+    try:
+        result=analyze_website(url,p.get("industry",""))
+        result["competitors"]=compare_websites(result,competitors,p.get("industry",""))
+    except Exception:
+        app.logger.exception("Website scan failed")
+        return jsonify({"error":"Could not scan this public website. Verify the URL and try again."}),422
+    p["website_analysis"]=result
+    save(owner(),p)
+    return jsonify(result)
 
 @app.get("/health")
 def health():
