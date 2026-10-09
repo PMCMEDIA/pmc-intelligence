@@ -1,14 +1,21 @@
 {% set tools = [
   {'id':'competitoriq', 'name':'PMC CompetitorIQ', 'subtitle':'Paid Media Intelligence', 'intro':'Review competitor ads, messaging, offers and landing pages to identify paid-media opportunities.'},
   {'id':'radar', 'name':'PMC Radar', 'subtitle':'SEO & Competitive Intelligence', 'intro':'Explore competitor visibility, current keywords, content gaps and recommendations to improve organic search performance.'},
-  {'id':'launchpad', 'name':'PMC Launchpad', 'subtitle':'SEM Campaign Builder', 'intro':'Build Google Search campaign structures, target keywords, ad groups, headlines, descriptions and launch checklists.'}
+  {'id':'launchpad', 'name':'PMC Launchpad', 'subtitle':'Google Search Campaign Builder', 'intro':'Generate keywords, ad groups, headlines, descriptions, negative keywords and pre-launch checklists.'},
+  {'id':'budget', 'name':'PMC Trajectory', 'subtitle':'Media Budget & KPI Planner', 'intro':'Model channel allocations, performance scenarios, measurable KPIs and required assets.'},
+  {'id':'performance', 'name':'PMC Signals', 'subtitle':'Marketing Performance Analyzer', 'intro':'Turn campaign reports into performance insights, optimizations and next-step recommendations.'},
+  {'id':'audience', 'name':'PMC Voice', 'subtitle':'Audience & Messaging Builder', 'intro':'Build audience personas, positioning, messaging pillars and campaign creative angles.'},
+  {'id':'creative', 'name':'PMC Payload', 'subtitle':'Creative Deliverables Planner', 'intro':'Translate the media strategy into production formats, assets and deliverables.'},
+  {'id':'audit', 'name':'PMC Preflight', 'subtitle':'Campaign Launch Auditor', 'intro':'Check conversion tracking, landing pages, UTMs, assets and launch readiness.'}
 ] %}
 {% macro hub_sidebar(logged_in) %}
 <aside id="hubSidebar" class="hub-sidebar" aria-label="PMC Intelligence navigation">
  <div class="sidebar-brand"><img src="{{ url_for('static', filename='pmc-intelligence-logo.png') }}" alt="PMC Intelligence"><button id="sidebarClose" class="sidebar-close" type="button" aria-label="Close navigation">×</button></div>
- <p class="sidebar-hub-name">PMC Intelligence Hub</p><p class="sidebar-tagline">Smarter insights. Stronger strategies. Faster execution.</p>
+ <p class="sidebar-hub-name">MISSION CONTROL / PMC HUB</p><p class="sidebar-tagline">Smarter insights. Stronger strategies. Faster execution.</p>
  <nav class="hub-primary-nav" aria-label="Main tools">
   <a href="#hub" data-hub-link="hub"><span class="nav-mark" aria-hidden="true">H</span><span><strong>Hub overview</strong><small>Your team's marketing toolkit</small></span></a>
+  <a href="#mission" data-hub-link="mission"><span class="nav-mark" aria-hidden="true">M</span><span><strong>PMC Mission Control</strong><small>Lead to Orbit Journey</small><small class="nav-active-note">Coming Soon</small></span></a>
+  <a href="#clients" data-hub-link="clients"><span class="nav-mark" aria-hidden="true">C</span><span><strong>Client Profiles</strong><small>Shared client intelligence</small><small class="nav-active-note">Coming Soon</small></span></a>
   <a href="#strategy" data-hub-link="strategy"><span class="nav-mark" aria-hidden="true">S</span><span><strong>PMC StrategyIQ</strong><small>AI Strategy Builder</small><small class="nav-active-note">AI Strategy + Advanced Builder</small></span></a>
  </nav>
  <div class="sidebar-future"><p class="sidebar-section-label">Team tools · Coming Soon</p>
@@ -16,16 +23,36 @@
    {% for tool in tools %}<a href="#{{ tool.id }}" data-hub-link="{{ tool.id }}"><span class="tool-link-heading"><strong>{{ tool.name }}</strong><span class="coming-badge">Coming Soon</span></span><span class="tool-subtitle">{{ tool.subtitle }}</span><span class="tool-intro">{{ tool.intro }}</span></a>{% endfor %}
   </nav>
  </div>
- <div class="sidebar-footer"><p>StrategyIQ is available now. Future tools are previews only.</p>{% if logged_in %}<a href="/logout" class="sidebar-signout">Sign out</a>{% else %}<a href="#strategy" data-hub-link="strategy" class="sidebar-signout">PMC team sign-in</a>{% endif %}<small>Hub navigation · hub-sidebar-1</small></div>
+ <div class="sidebar-footer"><p>StrategyIQ is available now. Mission Control, Client Profiles and future tools are previews only.</p>{% if logged_in %}<a href="/logout" class="sidebar-signout">Sign out</a>{% else %}<a href="#strategy" data-hub-link="strategy" class="sidebar-signout">PMC team sign-in</a>{% endif %}<small>Hub navigation · hub-sidebar-1</small></div>
 </aside><div id="sidebarBackdrop" class="sidebar-backdrop" hidden aria-hidden="true"></div>
 {% endmacro %}
 {% macro hub_pages(logged_in) %}
 <section id="hubHome" class="hub-panel" data-hub-panel="hub" hidden aria-labelledby="hubTitle">
- <p class="eyebrow">YOUR TEAM'S MARKETING TOOLKIT</p><h1 id="hubTitle" tabindex="-1">PMC Intelligence Hub</h1><p class="lead">Smarter insights. Stronger strategies. Faster execution.</p>
- <p class="muted">One home for strategy, research and campaign tools. Start with StrategyIQ; explore the tools planned for the team below.</p>
- <article class="card hub-featured"><div><span class="hub-available">Available Now</span><h2>PMC StrategyIQ</h2><p class="tool-subtitle">AI Strategy Builder</p><p>Review a generated strategy, refine the details and build a draft presentation. AI Strategy and Advanced Builder work from the same saved project.</p></div><a class="button hub-primary-action" href="#strategy" data-hub-link="strategy">{{ 'Open PMC StrategyIQ' if logged_in else 'Sign in to PMC StrategyIQ' }} →</a></article>
- <div class="hub-section-heading"><h2>Coming Soon</h2><p class="muted">A preview of the next tools for the PMC team.</p></div>
+ <div class="mission-hero"><p class="eyebrow">PMC INTELLIGENCE HUB / MISSION CONTROL</p><h1 id="hubTitle" tabindex="-1">Intelligence that moves<br>brands forward.</h1><p class="lead">One command center for client intelligence, strategic planning and campaign execution. From first contact to established orbit.</p></div>
+ <div class="mission-subhead"><p class="mission-eyebrow">MISSION WORKSPACE</p><h2>Choose your mission</h2><p class="muted">One connected workspace. Shared client context, research and strategy.</p></div>
+ <div class="mission-quick-grid">
+  <article class="mission-quick-card"><span class="mission-icon" aria-hidden="true">◎</span><h3>Mission Control</h3><p>Lead journey management from discovery and pitch through the first 90 days and Orbit.</p><span class="mission-coming">Coming Soon</span><a href="#mission" data-hub-link="mission">Explore mission stages →</a></article>
+  <article class="mission-quick-card"><span class="mission-icon" aria-hidden="true">◈</span><h3>Client Profiles</h3><p>One shared source for client context, goals, markets and research across every future tool.</p><span class="mission-coming">Coming Soon</span><a href="#clients" data-hub-link="clients">Explore client profiles →</a></article>
+  <article class="mission-quick-card"><span class="mission-icon" aria-hidden="true">✦</span><h3>PMC StrategyIQ</h3><p>Generate and refine marketing strategies, budgets and presentation outlines in the existing workspace.</p><span class="hub-available">Available Now</span><a href="#strategy" data-hub-link="strategy">{{ 'Open StrategyIQ →' if logged_in else 'Sign in to StrategyIQ →' }}</a></article>
+ </div>
+ <div class="mission-subhead"><p class="mission-eyebrow">THE FLIGHTPATH</p><h2>From first contact to orbit</h2><p class="muted">A planned connected journey, with milestone-based progress and human review.</p></div>
+ <ol class="mission-track"><li>Contact</li><li>Discovery</li><li>Intelligence</li><li>Strategy</li><li>Pitch</li><li>Launch</li><li>First 90 Days</li><li>Orbit</li></ol>
+ <article class="mission-featured"><div><span class="hub-available">AVAILABLE NOW</span><h2>PMC StrategyIQ</h2><p>Start building the strategy today. AI Strategy and Advanced Builder share the same project and support the larger Mission Control vision.</p></div><a class="button hub-primary-action" href="#strategy" data-hub-link="strategy">Open StrategyIQ →</a></article>
+ <div class="mission-subhead"><p class="mission-eyebrow">ON THE RADAR</p><h2>Coming Soon</h2><p class="muted">Future modules, designed to share client context and insight rather than operate as separate apps.</p></div>
  <div class="hub-tool-grid">{% for tool in tools %}<article class="card hub-tool-card"><span class="coming-badge">Coming Soon</span><h3>{{ tool.name }}</h3><p class="tool-subtitle">{{ tool.subtitle }}</p><p>{{ tool.intro }}</p><a href="#{{ tool.id }}" data-hub-link="{{ tool.id }}">Explore planned tool →</a></article>{% endfor %}</div>
+</section>
+<section id="missionPanel" class="hub-panel" data-hub-panel="mission" hidden aria-labelledby="missionTitle">
+ <a href="#hub" data-hub-link="hub" class="hub-back">← Back to Mission Control</a>
+ <article class="card mission-preview"><p class="mission-eyebrow">PMC MISSION CONTROL / COMING SOON</p><h1 id="missionTitle" tabindex="-1">From Lead to Orbit.</h1><p class="lead">Track every lead from first contact to pitch, launch and the first 90 days as a PMC client.</p>
+ <ol class="mission-track"><li>Contact</li><li>Discovery</li><li>Intelligence</li><li>Strategy</li><li>Pitch</li><li>Launch</li><li>First 90 Days</li><li>Orbit</li></ol>
+ <div class="mission-split"><div class="mission-note"><strong>One continuous journey</strong><p>Lead owner, activity, deliverables, proposals, research, kickoff and onboarding milestones stay with the record.</p></div><div class="mission-note"><strong>Orbit is earned</strong><p>At the end of the first 90 days following campaign kickoff, an account owner reviews launch readiness and approves the transition to ongoing account management.</p></div></div>
+ <p class="notice">Preview only. Lead tracking, milestones and automation are not active yet.</p><a class="button hub-primary-action" href="#strategy" data-hub-link="strategy">Open available StrategyIQ →</a></article>
+</section>
+<section id="clientsPanel" class="hub-panel" data-hub-panel="clients" hidden aria-labelledby="clientsTitle">
+ <a href="#hub" data-hub-link="hub" class="hub-back">← Back to Mission Control</a>
+ <article class="card mission-preview"><p class="mission-eyebrow">CLIENT INTELLIGENCE / COMING SOON</p><h1 id="clientsTitle" tabindex="-1">One profile. Every mission.</h1><p class="lead">A single client identity across the Hub, from qualified lead to established client.</p>
+ <div class="mission-split"><div class="mission-note"><strong>Company & strategy</strong><p>Company, website, service areas, priorities, audiences, brand voice, budgets and contacts.</p></div><div class="mission-note"><strong>Connected intelligence</strong><p>Research reports, SEO opportunities, proposals, strategy versions, campaign plans and the Mission Control timeline.</p></div></div>
+ <p class="notice">Preview only. Shared client profiles are planned; existing StrategyIQ projects continue to work as before.</p><a class="button hub-primary-action" href="#strategy" data-hub-link="strategy">Open available StrategyIQ →</a></article>
 </section>
 {% for tool in tools %}
 <section id="tool-{{ tool.id }}" class="hub-panel" data-hub-panel="{{ tool.id }}" hidden aria-labelledby="title-{{ tool.id }}"><a href="#hub" data-hub-link="hub" class="hub-back">← Back to the hub</a><div class="card tool-preview"><span class="coming-badge">Coming Soon</span><h1 id="title-{{ tool.id }}" tabindex="-1">{{ tool.name }}</h1><p class="lead">{{ tool.subtitle }}</p><p>{{ tool.intro }}</p><p class="notice">This is a preview of a planned team tool, not an active service. No research or campaigns are generated from this page.</p>{% if tool.id == 'radar' %}<p class="muted">SEO/AEO remains part of the main StrategyIQ strategy builder. Radar will be a separate, dedicated research tool; verified or connected data will be needed for current rankings.</p>{% elif tool.id == 'competitoriq' %}<p class="muted">The planned research will distinguish observed competitor activity from estimates and items requiring verification.</p>{% else %}<p class="muted">Campaign recommendations will require team review before launch. This preview does not publish ads or spend campaign budget.</p>{% endif %}<a href="#strategy" data-hub-link="strategy" class="button hub-primary-action">{{ 'Continue in PMC StrategyIQ' if logged_in else 'Sign in to PMC StrategyIQ' }}</a></div></section>
