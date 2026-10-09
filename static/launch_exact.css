@@ -96,3 +96,13 @@ body.hub-page {--bg:#020b15;--surface:#0b1b2a;--soft:#10283d;--ink:#eef7ff;--mut
   .launch-description{font-size:clamp(16px,1.03vw,21px)}
   .launch-principles{margin-top:28px}
 }
+
+/* Keep Research / Plan / Grow in one readable row on narrow phones. */
+@media(max-width:650px){
+ .launch-principles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;max-width:100%;margin-top:20px}
+ .launch-principles>div:first-child{display:none}
+ .launch-principles>div:not(:first-child){min-height:0;padding:0 9px 0 10px;border-left:1px solid #244767}
+ .launch-principles>div:nth-child(2){border-left:0;padding-left:0}
+ .launch-principles .principle-heading{font-size:14px;letter-spacing:-.02em}
+ .launch-principles .principle-caption{font-size:7.5px;letter-spacing:.3px;white-space:normal;line-height:1.3}
+}
