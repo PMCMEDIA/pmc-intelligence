@@ -36,3 +36,17 @@
 @media(max-width:1050px){.mission-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mission-track{grid-template-columns:repeat(4,1fr);row-gap:20px}.mission-track li:nth-child(4):after{display:none}}
 @media(max-width:650px){.mission-hero{padding:25px 22px;min-height:235px}.mission-hero:after{right:-330px}.mission-quick-grid,.mission-split{grid-template-columns:1fr}.mission-track{grid-template-columns:repeat(2,1fr)}.mission-track li:nth-child(even):after{display:none}.mission-featured{flex-direction:column;align-items:flex-start}}
 @media(prefers-reduced-motion:reduce){.mission-quick-card{transition:none}}
+
+/* Explicit light/dark surfaces: --card was never defined in the base theme. */
+.mission-quick-card,.mission-featured{background:var(--surface)}
+html[data-theme="light"] .hub-panel[data-hub-panel="hub"] .mission-hero{
+ background:radial-gradient(circle at 78% 40%,rgba(95,179,202,.18),transparent 34%),linear-gradient(120deg,#edf8fb,#dceef5 72%,#eaf5fa);
+ color:#142e40;border-color:#c5dce8;
+}
+html[data-theme="light"] .mission-hero .eyebrow{color:#006d81}
+html[data-theme="light"] .mission-hero .lead{color:#415e70}
+html[data-theme="light"] .mission-hero:before{background-image:radial-gradient(#41758e .8px,transparent 1px);opacity:.18}
+html[data-theme="light"] .mission-hero:after{border-color:rgba(34,115,146,.23);box-shadow:0 0 0 49px rgba(40,129,158,.045),0 0 0 107px rgba(47,120,154,.04)}
+html[data-theme="light"] .mission-track li:before{background:#e9f9fb}
+html[data-theme="light"] .mission-track li:last-child:before{background:#178d84;border-color:#178d84}
+html[data-theme="dark"] .mission-quick-card,html[data-theme="dark"] .mission-featured{background:var(--surface)}
