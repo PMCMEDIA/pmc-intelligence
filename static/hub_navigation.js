@@ -12,7 +12,7 @@
   const links = [...document.querySelectorAll('[data-hub-link]')];
   const routes = new Set(panels.map(panel => panel.dataset.hubPanel));
   const scrollPositions = new Map();
-  const titles = {hub:'PMC Intelligence Hub', strategy:'PMC StrategyIQ', competitoriq:'PMC CompetitorIQ', radar:'PMC Radar', launchpad:'PMC Launchpad'};
+  const titles = {hub:'PMC Intelligence Hub', mission:'PMC Mission Control', clients:'PMC Client Profiles', strategy:'PMC StrategyIQ', competitoriq:'PMC CompetitorIQ', radar:'PMC Radar', launchpad:'PMC Launchpad', budget:'PMC Trajectory', performance:'PMC Signals', audience:'PMC Voice', creative:'PMC Payload', audit:'PMC Preflight'};
   let current = null;
   let open = false;
   let scrollLock = null;
