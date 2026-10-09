@@ -10,36 +10,49 @@
 ] %}
 {% macro hub_sidebar(logged_in) %}
 <aside id="hubSidebar" class="hub-sidebar" aria-label="PMC Intelligence navigation">
- <div class="sidebar-brand"><img src="{{ url_for('static', filename='pmc-intelligence-logo.png') }}" alt="PMC Intelligence"><button id="sidebarClose" class="sidebar-close" type="button" aria-label="Close navigation">×</button></div>
- <p class="sidebar-hub-name">MISSION CONTROL / PMC HUB</p><p class="sidebar-tagline">Smarter insights. Stronger strategies. Faster execution.</p>
- <nav class="hub-primary-nav" aria-label="Main tools">
-  <a href="#hub" data-hub-link="hub"><span class="nav-mark" aria-hidden="true">H</span><span><strong>Hub overview</strong><small>Your team's marketing toolkit</small></span></a>
-  <a href="#mission" data-hub-link="mission"><span class="nav-mark" aria-hidden="true">M</span><span><strong>PMC Mission Control</strong><small>Lead to Orbit Journey</small><small class="nav-active-note">Coming Soon</small></span></a>
-  <a href="#clients" data-hub-link="clients"><span class="nav-mark" aria-hidden="true">C</span><span><strong>PMC Starbase</strong><small>Client Profiles & Intelligence</small><small class="nav-active-note">Coming Soon</small></span></a>
-  <a href="#strategy" data-hub-link="strategy"><span class="nav-mark" aria-hidden="true">S</span><span><strong>PMC Navigator</strong><small>AI Marketing Strategy Builder</small><small class="nav-active-note">AI Strategy + Advanced Builder</small></span></a>
+ <div class="sidebar-brand"><a href="#hub" data-hub-link="hub" class="rocket-brand" aria-label="PMC Intelligence home"><strong>PMC</strong><small>INTELLIGENCE</small></a><button id="sidebarClose" class="sidebar-close" type="button" aria-label="Close navigation">×</button></div>
+ <nav class="hub-primary-nav" aria-label="Main navigation">
+  <a href="#hub" data-hub-link="hub"><span class="rocket-nav-icon" aria-hidden="true">⌂</span><strong>Home</strong></a>
+  <a href="#strategy" data-hub-link="strategy"><span class="rocket-nav-icon" aria-hidden="true">➤</span><strong>Strategy Builder</strong></a>
+  <a href="#clients" data-hub-link="clients"><span class="rocket-nav-icon" aria-hidden="true">♙</span><strong>Client Profiles</strong></a>
  </nav>
- <div class="sidebar-future"><p class="sidebar-section-label">Team tools · Coming Soon</p>
-  <nav class="hub-future-nav" aria-label="Coming soon tools">
-   {% for tool in tools %}<a href="#{{ tool.id }}" data-hub-link="{{ tool.id }}"><span class="tool-link-heading"><strong>{{ tool.name }}</strong><span class="coming-badge">{{ "Coming Soon · High Priority" if tool.id == "budget" else "Coming Soon" }}</span></span><span class="tool-subtitle">{{ tool.subtitle }}</span><span class="tool-intro">{{ tool.intro }}</span></a>{% endfor %}
-  </nav>
- </div>
- <div class="sidebar-footer"><p>StrategyIQ is available now. Mission Control, PMC Starbase and future tools are previews only.</p>{% if logged_in %}<a href="/logout" class="sidebar-signout">Sign out</a>{% else %}<a href="#strategy" data-hub-link="strategy" class="sidebar-signout">PMC team sign-in</a>{% endif %}<small>Hub navigation · hub-sidebar-1</small></div>
+ <p class="rocket-sidebar-label">TOOLS <small>COMING SOON</small></p>
+ <nav class="rocket-future-nav" aria-label="Future tools">
+  <a href="#competitoriq" data-hub-link="competitoriq"><span aria-hidden="true">◎</span>PMC Recon</a>
+  <a href="#radar" data-hub-link="radar"><span aria-hidden="true">⌕</span>PMC Radar</a>
+  <a href="#launchpad" data-hub-link="launchpad"><span aria-hidden="true">➤</span>PMC Launchpad</a>
+  <a href="#performance" data-hub-link="performance"><span aria-hidden="true">▥</span>PMC Telemetry</a>
+  <a href="#audience" data-hub-link="audience"><span aria-hidden="true">♧</span>PMC Signal</a>
+  <a href="#budget" data-hub-link="budget"><span aria-hidden="true">＄</span>PMC Trajectory</a>
+  <a href="#mission" data-hub-link="mission"><span aria-hidden="true">⊙</span>Mission Control</a>
+  <a href="#creative" data-hub-link="creative"><span aria-hidden="true">✧</span>Creative Planner</a>
+  <a href="#audit" data-hub-link="audit"><span aria-hidden="true">✓</span>Launch Auditor</a>
+ </nav>
+ <div class="rocket-sidebar-foot"><p>Smarter insights.<br>Stronger strategies.<br>Faster execution.</p><p class="rocket-vertical-caption">MARKETING INTELLIGENCE<br>FOR A BRIGHTER TOMORROW</p>{% if logged_in %}<a href="/logout" class="sidebar-signout">Sign out →</a>{% endif %}</div>
 </aside><div id="sidebarBackdrop" class="sidebar-backdrop" hidden aria-hidden="true"></div>
 {% endmacro %}
 {% macro hub_pages(logged_in) %}
 <section id="hubHome" class="hub-panel" data-hub-panel="hub" hidden aria-labelledby="hubTitle">
- <div class="mission-hero"><p class="eyebrow">PMC INTELLIGENCE HUB / MISSION CONTROL</p><h1 id="hubTitle" tabindex="-1">Intelligence that moves<br>brands forward.</h1><p class="lead">One command center for client intelligence, strategic planning and campaign execution. From first contact to established orbit.</p></div>
- <div class="mission-subhead"><p class="mission-eyebrow">MISSION WORKSPACE</p><h2>Choose your mission</h2><p class="muted">One connected workspace. Shared client context, research and strategy.</p></div>
- <div class="mission-quick-grid">
-  <article class="mission-quick-card"><span class="mission-icon" aria-hidden="true">◎</span><h3>Mission Control</h3><p>Lead journey management from discovery and pitch through the first 90 days and Orbit.</p><span class="mission-coming">Coming Soon</span><a href="#mission" data-hub-link="mission">Explore mission stages →</a></article>
-  <article class="mission-quick-card"><span class="mission-icon" aria-hidden="true">◈</span><h3>PMC Starbase</h3><p>One shared source for client context, goals, markets and research across every future tool.</p><span class="mission-coming">Coming Soon</span><a href="#clients" data-hub-link="clients">Explore client profiles →</a></article>
-  <article class="mission-quick-card"><span class="mission-icon" aria-hidden="true">✦</span><h3>PMC Navigator</h3><p>Generate and refine marketing strategies, budgets and presentation outlines in the existing workspace.</p><span class="hub-available">Available Now</span><a href="#strategy" data-hub-link="strategy">{{ 'Open StrategyIQ →' if logged_in else 'Sign in to StrategyIQ →' }}</a></article>
+ <div class="rocket-home">
+  <div class="rocket-hero">
+   <div class="rocket-launch-art" aria-hidden="true"></div>
+   <div class="rocket-hero-copy"><p class="rocket-kicker">PMC INTELLIGENCE HUB</p><h1 id="hubTitle" tabindex="-1">Launch smarter.<br><span>Grow faster.</span></h1>
+   <p class="rocket-description">Smarter insights. Stronger strategies. Faster execution.<br>All the tools you need to launch and grow remarkable brands.</p>
+   <div class="rocket-proof"><div>HIGHER<br>STRATEGIES<br><em>—</em><br>BIGGER<br>RESULTS</div><div>RESEARCH<small>BETTER DECISIONS</small></div><div>PLAN<small>SMARTER CAMPAIGNS</small></div><div>GROW<small>BRIGHTER BRANDS</small></div></div></div>
+   <div class="rocket-hero-aside">INSIGHTS<br>STRATEGY<br>EXECUTION<br>GROWTH<br><br>BRANDS<br>HIGHER</div>
+   <div class="rocket-brighter">A BRIGHTER<br>TOMORROW</div>
+  </div>
+  <div class="rocket-tiles"><a href="#strategy" data-hub-link="strategy" class="rocket-tile rocket-art-growth"><span class="rocket-tile-icon" aria-hidden="true">✦</span><span class="rocket-tile-name">Strategy Builder</span><span class="rocket-tile-detail">Turn insights into actionable strategies.</span><span class="rocket-status rocket-active">Available Now</span></a>
+<a href="#clients" data-hub-link="clients" class="rocket-tile rocket-art-bars"><span class="rocket-tile-icon" aria-hidden="true">♟</span><span class="rocket-tile-name">Client Profiles</span><span class="rocket-tile-detail">Manage client context, research and plans.</span><span class="rocket-status ">Coming Soon</span></a>
+<a href="#competitoriq" data-hub-link="competitoriq" class="rocket-tile rocket-art-line"><span class="rocket-tile-icon" aria-hidden="true">◎</span><span class="rocket-tile-name">CompetitorIQ</span><span class="rocket-tile-detail">Analyze competitors and find opportunities.</span><span class="rocket-status ">Coming Soon</span></a>
+<a href="#radar" data-hub-link="radar" class="rocket-tile rocket-art-line"><span class="rocket-tile-icon" aria-hidden="true">⌕</span><span class="rocket-tile-name">SearchIQ</span><span class="rocket-tile-detail">SEO, AEO and organic search intelligence.</span><span class="rocket-status ">Coming Soon</span></a>
+<a href="#launchpad" data-hub-link="launchpad" class="rocket-tile rocket-art-orbit"><span class="rocket-tile-icon" aria-hidden="true">➤</span><span class="rocket-tile-name">Launchpad</span><span class="rocket-tile-detail">Build and plan Google Search campaigns.</span><span class="rocket-status ">Coming Soon</span></a>
+<a href="#performance" data-hub-link="performance" class="rocket-tile rocket-art-bars"><span class="rocket-tile-icon" aria-hidden="true">▥</span><span class="rocket-tile-name">Performance Analyzer</span><span class="rocket-tile-detail">Turn reports into smarter recommendations.</span><span class="rocket-status ">Coming Soon</span></a>
+<a href="#audience" data-hub-link="audience" class="rocket-tile rocket-art-dots"><span class="rocket-tile-icon" aria-hidden="true">♧</span><span class="rocket-tile-name">Audience Builder</span><span class="rocket-tile-detail">Create messaging for high-value audiences.</span><span class="rocket-status ">Coming Soon</span></a>
+<a href="#budget" data-hub-link="budget" class="rocket-tile rocket-art-line"><span class="rocket-tile-icon" aria-hidden="true">＄</span><span class="rocket-tile-name">Budget & KPI Planner</span><span class="rocket-tile-detail">Plan investments and track outcomes.</span><span class="rocket-status ">Coming Soon</span></a>
+<a href="#mission" data-hub-link="mission" class="rocket-tile rocket-art-orbit"><span class="rocket-tile-icon" aria-hidden="true">⊙</span><span class="rocket-tile-name">Mission Control</span><span class="rocket-tile-detail">Your command center for growth.</span><span class="rocket-status ">Coming Soon</span></a></div>
+  <div class="rocket-bottom"><div class="rocket-bottom-head"><span class="rocket-tile-icon">⊙</span><div><strong>From planning to launch.</strong><small>One connected marketing intelligence workspace.</small></div></div><div class="rocket-flight">PLAN <span>→</span> LAUNCH <span>→</span> OPTIMIZE <span>→</span> SCALE</div><div class="rocket-bottom-end">GREATER<br>BRANDS<br>AHEAD</div></div>
  </div>
- <div class="mission-subhead"><p class="mission-eyebrow">THE FLIGHTPATH</p><h2>From first contact to orbit</h2><p class="muted">A planned connected journey, with milestone-based progress and human review.</p></div>
- <ol class="mission-track"><li>Contact</li><li>Discovery</li><li>Intelligence</li><li>Strategy</li><li>Pitch</li><li>Launch</li><li>First 90 Days</li><li>Orbit</li></ol>
- <article class="mission-featured"><div><span class="hub-available">AVAILABLE NOW</span><h2>PMC Navigator</h2><p>Start building the strategy today. AI Strategy and Advanced Builder share the same project and support the larger Mission Control vision.</p></div><a class="button hub-primary-action" href="#strategy" data-hub-link="strategy">Open StrategyIQ →</a></article>
- <div class="mission-subhead"><p class="mission-eyebrow">ON THE RADAR</p><h2>Coming Soon</h2><p class="muted">Future modules, designed to share client context and insight rather than operate as separate apps.</p></div>
- <div class="hub-tool-grid">{% for tool in tools %}<article class="card hub-tool-card"><span class="coming-badge">{{ "Coming Soon · High Priority" if tool.id == "budget" else "Coming Soon" }}</span><h3>{{ tool.name }}</h3><p class="tool-subtitle">{{ tool.subtitle }}</p><p>{{ tool.intro }}</p><a href="#{{ tool.id }}" data-hub-link="{{ tool.id }}">Explore planned tool →</a></article>{% endfor %}</div>
 </section>
 <section id="missionPanel" class="hub-panel" data-hub-panel="mission" hidden aria-labelledby="missionTitle">
  <a href="#hub" data-hub-link="hub" class="hub-back">← Back to Mission Control</a>
