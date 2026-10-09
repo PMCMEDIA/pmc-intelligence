@@ -86,3 +86,13 @@ body.hub-page {--bg:#020b15;--surface:#0b1b2a;--soft:#10283d;--ink:#eef7ff;--mut
 
 /* Keep sign-out available without altering the reference footer layout. */
 .rocket-sidebar-foot{position:relative}.rocket-sidebar-foot .sidebar-signout{position:absolute;bottom:2px;right:17px;font-size:10px;opacity:.65;color:#92caff}
+
+/* Maintain mockup proportions on wide desktop monitors. */
+@media(min-width:1500px){
+  .launch-hero{height:560px}
+  .launch-hero-art{width:47.05%;height:560px;background-size:100% 100%}
+  .launch-hero h1{font-size:clamp(78px,5.4vw,104px)}
+  .launch-hero-copy{max-width:65%}
+  .launch-description{font-size:clamp(16px,1.03vw,21px)}
+  .launch-principles{margin-top:28px}
+}
