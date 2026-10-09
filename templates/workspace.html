@@ -21,7 +21,7 @@
 {{ hub_pages(logged_in) }}
 {% if not logged_in %}
 <main class="login-layout" data-hub-panel="strategy">
- <section><p class="eyebrow">PMC STRATEGYIQ · AI STRATEGY BUILDER</p><h1 tabindex="-1">Strategy starts here.</h1><p class="lead">Start with a generated strategy preview. Open the advanced controls only when you need them.</p><p>Client brief → Strategy preview → Draft deck → Department review</p></section>
+ <section><p class="eyebrow">PMC NAVIGATOR · AI STRATEGY BUILDER</p><h1 tabindex="-1">Strategy starts here.</h1><p class="lead">Start with a generated strategy preview. Open the advanced controls only when you need them.</p><p>Client brief → Strategy preview → Draft deck → Department review</p></section>
  <section class="card"><h2>Welcome back</h2><p>Sign in with your PMC email to open a shared project or start a new strategy.</p><form method="post" action="/enter"><label for="loginEmail">PMC email</label><input id="loginEmail" name="email" type="email" autocomplete="email" placeholder="yourname@pmcne.com" required><button class="primary" type="submit">Enter PMC Intelligence</button></form>{% if login_error %}<p class="error" role="alert">{{ login_error }}</p>{% endif %}</section>
 </main>
 {% else %}
