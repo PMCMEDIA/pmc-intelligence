@@ -82,11 +82,18 @@ class HubBrowserTests(unittest.TestCase):
     def test_desktop_tools_and_history(self):
         p = self.page; p.goto(self.origin)
         expect(p.locator('#hubHome')).to_be_visible()
+        (ROOT/'artifacts').mkdir(exist_ok=True)
+        p.screenshot(path=str(ROOT/'artifacts/approved-hub-desktop.png'), animations='disabled')
         expect(p.locator('#hubSidebar')).to_be_visible()
         expect(p.locator('#sidebarToggle')).to_be_hidden()
         self.assertEqual(p.locator('.rocket-future-nav a').count(), 7)
         expect(p.locator('#hubHome')).to_contain_text('Launch smarter.')
         self.assertEqual(p.locator('.launch-tile').count(), 8)
+        first = p.locator('.launch-tile').nth(0).bounding_box()
+        fourth = p.locator('.launch-tile').nth(3).bounding_box()
+        fifth = p.locator('.launch-tile').nth(4).bounding_box()
+        self.assertAlmostEqual(first['y'], fourth['y'], delta=1)
+        self.assertGreater(fifth['y'], first['y'] + 150)
         expect(p.locator('.launch-bottom')).to_contain_text('Mission Control')
         hero_box = p.locator('.launch-hero').bounding_box()
         self.assertGreater(hero_box['height'], 450)
@@ -102,7 +109,11 @@ class HubBrowserTests(unittest.TestCase):
         p = self.page
         for width in [320,375,430,768,1099]:
             p.set_viewport_size({'width':width,'height':812}); p.goto(self.origin)
-            self.assert_no_overflow(); p.locator('#sidebarToggle').click()
+            self.assert_no_overflow()
+            if width == 375:
+                (ROOT/'artifacts').mkdir(exist_ok=True)
+                p.screenshot(path=str(ROOT/'artifacts/approved-hub-mobile.png'), animations='disabled')
+            p.locator('#sidebarToggle').click()
             expect(p.locator('#hubSidebar')).to_have_attribute('role','dialog')
             self.assertTrue(p.locator('#hubFrame').evaluate('(e)=>e.inert'))
             expect(p.locator('#sidebarClose')).to_be_focused()
