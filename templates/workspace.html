@@ -8,8 +8,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='workspace_modes.css') }}?v=modes-1">
 <link rel="stylesheet" href="{{ url_for('static', filename='hub_navigation.css') }}?v=hub-sidebar-1">
 <link rel="stylesheet" href="{{ url_for('static', filename='mission_control.css') }}?v=mission-control-1"><link rel="stylesheet" href="{{ url_for('static', filename='rocket_hub.css') }}?v=rocket-hub-2">
+<link rel="stylesheet" href="{{ url_for('static', filename='launch_exact.css') }}?v=launch-exact-1">
 </head>
-<body class="hub-page" data-hub-release="rocket-hub-2" data-authenticated="{{ 'true' if logged_in else 'false' }}">
+<body class="hub-page" data-hub-release="launch-exact-1" data-authenticated="{{ 'true' if logged_in else 'false' }}">
 {% from 'hub_components.html' import hub_sidebar, hub_pages %}
 {{ hub_sidebar(logged_in) }}
 <div id="hubFrame" class="hub-frame">
