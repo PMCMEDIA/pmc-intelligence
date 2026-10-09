@@ -2,11 +2,11 @@
   {'id':'competitoriq', 'name':'PMC CompetitorIQ', 'subtitle':'Paid Media Intelligence', 'intro':'Review competitor ads, messaging, offers and landing pages to identify paid-media opportunities.'},
   {'id':'radar', 'name':'PMC Radar', 'subtitle':'SEO & Competitive Intelligence', 'intro':'Explore competitor visibility, current keywords, content gaps and recommendations to improve organic search performance.'},
   {'id':'launchpad', 'name':'PMC Launchpad', 'subtitle':'Google Search Campaign Builder', 'intro':'Generate keywords, ad groups, headlines, descriptions, negative keywords and pre-launch checklists.'},
-  {'id':'budget', 'name':'PMC Trajectory', 'subtitle':'Media Budget & KPI Planner', 'intro':'Model channel allocations, performance scenarios, measurable KPIs and required assets.'},
-  {'id':'performance', 'name':'PMC Signals', 'subtitle':'Marketing Performance Analyzer', 'intro':'Turn campaign reports into performance insights, optimizations and next-step recommendations.'},
-  {'id':'audience', 'name':'PMC Voice', 'subtitle':'Audience & Messaging Builder', 'intro':'Build audience personas, positioning, messaging pillars and campaign creative angles.'},
-  {'id':'creative', 'name':'PMC Payload', 'subtitle':'Creative Deliverables Planner', 'intro':'Translate the media strategy into production formats, assets and deliverables.'},
-  {'id':'audit', 'name':'PMC Preflight', 'subtitle':'Campaign Launch Auditor', 'intro':'Check conversion tracking, landing pages, UTMs, assets and launch readiness.'}
+  {'id':'budget', 'name':'Media Budget & KPI Planner', 'subtitle':'Investment Planning & Performance Projections', 'intro':'Model channel allocations, performance scenarios, measurable KPIs and required assets.'},
+  {'id':'performance', 'name':'Marketing Performance Analyzer', 'subtitle':'Reporting & Optimization', 'intro':'Turn campaign reports into performance insights, optimizations and next-step recommendations.'},
+  {'id':'audience', 'name':'Audience & Messaging Builder', 'subtitle':'Audience Strategy & Creative Direction', 'intro':'Build audience personas, positioning, messaging pillars and campaign creative angles.'},
+  {'id':'creative', 'name':'Creative Deliverables Planner', 'subtitle':'Production Planning', 'intro':'Translate the media strategy into production formats, assets and deliverables.'},
+  {'id':'audit', 'name':'Campaign Launch Auditor', 'subtitle':'Launch Quality Assurance', 'intro':'Check conversion tracking, landing pages, UTMs, assets and launch readiness.'}
 ] %}
 {% macro hub_sidebar(logged_in) %}
 <aside id="hubSidebar" class="hub-sidebar" aria-label="PMC Intelligence navigation">
@@ -20,7 +20,7 @@
  </nav>
  <div class="sidebar-future"><p class="sidebar-section-label">Team tools · Coming Soon</p>
   <nav class="hub-future-nav" aria-label="Coming soon tools">
-   {% for tool in tools %}<a href="#{{ tool.id }}" data-hub-link="{{ tool.id }}"><span class="tool-link-heading"><strong>{{ tool.name }}</strong><span class="coming-badge">Coming Soon</span></span><span class="tool-subtitle">{{ tool.subtitle }}</span><span class="tool-intro">{{ tool.intro }}</span></a>{% endfor %}
+   {% for tool in tools %}<a href="#{{ tool.id }}" data-hub-link="{{ tool.id }}"><span class="tool-link-heading"><strong>{{ tool.name }}</strong><span class="coming-badge">{{ "Coming Soon · High Priority" if tool.id == "budget" else "Coming Soon" }}</span></span><span class="tool-subtitle">{{ tool.subtitle }}</span><span class="tool-intro">{{ tool.intro }}</span></a>{% endfor %}
   </nav>
  </div>
  <div class="sidebar-footer"><p>StrategyIQ is available now. Mission Control, Client Profiles and future tools are previews only.</p>{% if logged_in %}<a href="/logout" class="sidebar-signout">Sign out</a>{% else %}<a href="#strategy" data-hub-link="strategy" class="sidebar-signout">PMC team sign-in</a>{% endif %}<small>Hub navigation · hub-sidebar-1</small></div>
@@ -39,7 +39,7 @@
  <ol class="mission-track"><li>Contact</li><li>Discovery</li><li>Intelligence</li><li>Strategy</li><li>Pitch</li><li>Launch</li><li>First 90 Days</li><li>Orbit</li></ol>
  <article class="mission-featured"><div><span class="hub-available">AVAILABLE NOW</span><h2>PMC StrategyIQ</h2><p>Start building the strategy today. AI Strategy and Advanced Builder share the same project and support the larger Mission Control vision.</p></div><a class="button hub-primary-action" href="#strategy" data-hub-link="strategy">Open StrategyIQ →</a></article>
  <div class="mission-subhead"><p class="mission-eyebrow">ON THE RADAR</p><h2>Coming Soon</h2><p class="muted">Future modules, designed to share client context and insight rather than operate as separate apps.</p></div>
- <div class="hub-tool-grid">{% for tool in tools %}<article class="card hub-tool-card"><span class="coming-badge">Coming Soon</span><h3>{{ tool.name }}</h3><p class="tool-subtitle">{{ tool.subtitle }}</p><p>{{ tool.intro }}</p><a href="#{{ tool.id }}" data-hub-link="{{ tool.id }}">Explore planned tool →</a></article>{% endfor %}</div>
+ <div class="hub-tool-grid">{% for tool in tools %}<article class="card hub-tool-card"><span class="coming-badge">{{ "Coming Soon · High Priority" if tool.id == "budget" else "Coming Soon" }}</span><h3>{{ tool.name }}</h3><p class="tool-subtitle">{{ tool.subtitle }}</p><p>{{ tool.intro }}</p><a href="#{{ tool.id }}" data-hub-link="{{ tool.id }}">Explore planned tool →</a></article>{% endfor %}</div>
 </section>
 <section id="missionPanel" class="hub-panel" data-hub-panel="mission" hidden aria-labelledby="missionTitle">
  <a href="#hub" data-hub-link="hub" class="hub-back">← Back to Mission Control</a>
