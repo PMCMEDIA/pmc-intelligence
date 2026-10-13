@@ -1,0 +1,69 @@
+/* Restore the theme control hidden by the approved-layout header rule.
+   Load after launch_finish.css. Layout/artwork stay unchanged in dark mode. */
+.hub-page #themeToggle{display:inline-flex;visibility:visible;align-items:center;justify-content:center;min-height:44px;min-width:98px;padding:10px 14px;white-space:nowrap;font-size:13px;line-height:1.2;cursor:pointer;background:#10263b;color:#f5f9ff;border:1px solid #46647d;border-radius:8px;box-shadow:0 2px 10px #0002}
+.hub-page #themeToggle:focus-visible{outline:3px solid #48b8ff;outline-offset:3px}
+.hub-page #themeToggle:hover{border-color:#71baff}
+@media(min-width:1100px){
+ body.hub-page[data-hub-view="hub"] #hubFrame>.app-header{display:flex!important;position:absolute;top:16px;right:22px;left:auto;z-index:35;width:auto;max-width:calc(100% - 260px);min-height:44px;margin:0;padding:0;border:0;background:transparent;box-shadow:none;backdrop-filter:none}
+ .hub-page[data-hub-view="hub"] #hubFrame>.app-header .brand{display:none}
+ .hub-page[data-hub-view="hub"] #hubFrame>.app-header .header-actions{margin:0;flex-wrap:nowrap}
+}
+@media(max-width:1099px){
+ body.hub-page[data-hub-view="hub"] #hubFrame>.app-header{display:grid!important;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:8px}
+ .hub-page .app-header .brand{min-width:0}
+ .hub-page .app-header .brand img{max-width:100%}
+ .hub-page #themeToggle{min-width:90px;padding:10px;font-size:12px}
+}
+@media(max-width:480px){
+ .hub-page .app-header{padding-left:12px;padding-right:12px}
+ .hub-page .app-header .header-signout{display:none} /* Sign-out remains in the mobile drawer. */
+ .hub-page .app-header .brand img{width:96px}
+}
+/* Previous hub artwork styles assigned a dark palette to body regardless of
+   data-theme. Restore theme-aware variables for the entire strategy workspace. */
+html[data-theme="light"] body.hub-page{--bg:#f4f7fb;--surface:#fff;--soft:#edf3fa;--ink:#142c42;--muted:#496177;--line:#cbd8e5;--accent:#086ea9;--accent-ink:#fff;--focus:#087fb7;--error:#a23030;--shadow:0 6px 22px #1638580a;background:var(--bg);color:var(--ink)}
+html[data-theme="light"] .hub-page .hub-frame,
+html[data-theme="light"] .hub-page .hub-panel[data-hub-panel="hub"]{background:var(--bg);color:var(--ink)}
+html[data-theme="light"] .hub-page .hub-sidebar{background:linear-gradient(175deg,#f9fbff,#edf3fa);color:var(--ink);border-right-color:var(--line)}
+html[data-theme="light"] .hub-page .rocket-brand{color:#12304a}
+html[data-theme="light"] .hub-page .rocket-brand small{color:#3d607d}
+html[data-theme="light"] .hub-page .hub-sidebar nav a,
+html[data-theme="light"] .hub-page .hub-sidebar .nav-svg,
+html[data-theme="light"] .hub-page .rocket-sidebar-foot,
+html[data-theme="light"] .hub-page .rocket-sidebar-foot .rocket-vertical-caption{color:#35536f}
+html[data-theme="light"] .hub-page .hub-sidebar .rocket-sidebar-label,
+html[data-theme="light"] .hub-page .rocket-sidebar-foot .sidebar-signout{color:#066b9c}
+html[data-theme="light"] .hub-page .hub-sidebar nav a[aria-current="page"]{background:#163f75;color:#fff}
+html[data-theme="light"] .hub-page .hub-sidebar nav a[aria-current="page"] .nav-svg{color:#fff}
+html[data-theme="light"] .hub-page .hub-sidebar nav a:hover:not([aria-current="page"]){background:#e0ebf7;color:#173f63}
+html[data-theme="light"] .hub-page .hub-frame .app-header{background:#edf3fa;color:var(--ink);border-color:var(--line)}
+html[data-theme="light"] .hub-page #themeToggle{background:#fff;color:#173b5a;border-color:#8ea9c0}
+html[data-theme="light"] .hub-page .launch-home{background:linear-gradient(180deg,#edf5fc,#f4f7fb)}
+html[data-theme="light"] .hub-page .launch-hero{background:radial-gradient(ellipse at 75% 45%,#cadff0,transparent 58%),#edf5fc}
+html[data-theme="light"] .hub-page .launch-hero::before{opacity:.09}
+html[data-theme="light"] .hub-page .launch-hero-art::after{background:linear-gradient(90deg,#edf5fc,rgba(237,245,252,.58) 20%,transparent 57%)}
+html[data-theme="light"] .hub-page .launch-hero h1{color:#112b42;text-shadow:none}
+html[data-theme="light"] .hub-page .launch-hero h1 span{color:#0674b6}
+html[data-theme="light"] .hub-page .launch-eyebrow{color:#086d9f}
+html[data-theme="light"] .hub-page .launch-description{color:#203e56}
+html[data-theme="light"] .hub-page .launch-principles>div{border-color:#a5bdd0}
+html[data-theme="light"] .hub-page .launch-principles .mission-principle,
+html[data-theme="light"] .hub-page .launch-principles .mission-principle span,
+html[data-theme="light"] .hub-page .launch-principles .principle-caption{color:#315570}
+html[data-theme="light"] .hub-page .launch-principles .principle-heading{color:#0771ae}
+html[data-theme="light"] .hub-page .launch-tile{background:radial-gradient(ellipse at 100% 100%,#e1eefb,transparent 72%),#fff;border-color:#cddce9;box-shadow:0 4px 14px #16385808;color:var(--ink)}
+html[data-theme="light"] .hub-page .launch-tile:hover{background:#edf5fd;border-color:#5a97c0}
+html[data-theme="light"] .hub-page .launch-tile-icon,
+html[data-theme="light"] .hub-page .launch-bottom-icon{color:#287cb6}
+html[data-theme="light"] .hub-page .launch-tile-title,
+html[data-theme="light"] .hub-page .launch-bottom-title{color:#18354e}
+html[data-theme="light"] .hub-page .launch-tile-desc,
+html[data-theme="light"] .hub-page .launch-bottom-subtitle,
+html[data-theme="light"] .hub-page .launch-bottom-end{color:#405e77}
+html[data-theme="light"] .hub-page .launch-status{background:#e4edf6;color:#345169;border-color:#b0c7da}
+html[data-theme="light"] .hub-page .launch-status.active{background:#c5f0de;color:#075940;border-color:#87d1b4}
+html[data-theme="light"] .hub-page .launch-bottom{background:linear-gradient(110deg,#fff,#e9f2fb);border-color:#cddce9;color:var(--ink)}
+html[data-theme="light"] .hub-page .launch-flightpath{color:#365975;border-color:#abc3d7}
+html[data-theme="light"] .hub-page .launch-flightpath span{color:#2c6c97}
+/* Preserve the transparent floating toolbar over both hero treatments. */
+@media(min-width:1100px){html[data-theme="light"] .hub-page[data-hub-view="hub"] #hubFrame>.app-header{background:transparent}}
