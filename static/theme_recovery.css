@@ -37,6 +37,7 @@ html[data-theme="light"] .hub-page .hub-sidebar nav a[aria-current="page"]{backg
 html[data-theme="light"] .hub-page .hub-sidebar nav a[aria-current="page"] .nav-svg{color:#fff}
 html[data-theme="light"] .hub-page .hub-sidebar nav a:hover:not([aria-current="page"]){background:#e0ebf7;color:#173f63}
 html[data-theme="light"] .hub-page .hub-frame .app-header{background:#edf3fa;color:var(--ink);border-color:var(--line)}
+html[data-theme="light"] .hub-page .app-header .brand img{filter:brightness(.42)}
 html[data-theme="light"] .hub-page #themeToggle{background:#fff;color:#173b5a;border-color:#8ea9c0}
 html[data-theme="light"] .hub-page .launch-home{background:linear-gradient(180deg,#edf5fc,#f4f7fb)}
 html[data-theme="light"] .hub-page .launch-hero{background:radial-gradient(ellipse at 75% 45%,#cadff0,transparent 58%),#edf5fc}
@@ -67,3 +68,6 @@ html[data-theme="light"] .hub-page .launch-flightpath{color:#365975;border-color
 html[data-theme="light"] .hub-page .launch-flightpath span{color:#2c6c97}
 /* Preserve the transparent floating toolbar over both hero treatments. */
 @media(min-width:1100px){html[data-theme="light"] .hub-page[data-hub-view="hub"] #hubFrame>.app-header{background:transparent}}
+/* On phones, copy overlaps the art. Fade only the light-mode artwork behind it,
+   retaining the original rocket and layout rather than placing dark text on black. */
+@media(max-width:650px){html[data-theme="light"] .hub-page .launch-hero-art::after{background:linear-gradient(180deg,rgba(237,245,252,.82) 0%,rgba(237,245,252,.96) 65%,rgba(237,245,252,.28) 86%,transparent 100%),linear-gradient(90deg,#edf5fc,rgba(237,245,252,.12) 85%)}}
