@@ -4,12 +4,12 @@
 .hub-page #themeToggle:focus-visible{outline:3px solid #48b8ff;outline-offset:3px}
 .hub-page #themeToggle:hover{border-color:#71baff}
 @media(min-width:1100px){
- body.hub-page[data-hub-view="hub"] #hubFrame>.app-header{display:flex!important;position:absolute;top:16px;right:22px;left:auto;z-index:35;width:auto;max-width:calc(100% - 260px);min-height:44px;margin:0;padding:0;border:0;background:transparent;box-shadow:none;backdrop-filter:none}
+ body.hub-page[data-hub-view="hub"]:has(#hubHome:not([hidden])) #hubFrame>.app-header{display:flex!important;position:absolute;top:16px;right:22px;left:auto;z-index:35;width:auto;max-width:calc(100% - 260px);min-height:44px;margin:0;padding:0;border:0;background:transparent;box-shadow:none;backdrop-filter:none}
  .hub-page[data-hub-view="hub"] #hubFrame>.app-header .brand{display:none}
  .hub-page[data-hub-view="hub"] #hubFrame>.app-header .header-actions{margin:0;flex-wrap:nowrap}
 }
 @media(max-width:1099px){
- body.hub-page[data-hub-view="hub"] #hubFrame>.app-header{display:grid!important;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:8px}
+ body.hub-page[data-hub-view="hub"]:has(#hubHome:not([hidden])) #hubFrame>.app-header{display:grid!important;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:8px}
  .hub-page .app-header .brand{min-width:0}
  .hub-page .app-header .brand img{max-width:100%}
  .hub-page #themeToggle{min-width:90px;padding:10px;font-size:12px}
