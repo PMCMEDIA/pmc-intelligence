@@ -320,7 +320,7 @@ def prepared_slide(item, parts):
         shape=find_shape(root,shape_id);set_text(shape,item['fields'][name])
         body_fields={'copy','campaigns','priorities','measurement','asset_groups','signals','kpis','secondary','audiences','creative','experience'}
         format_dynamic(shape,body=name in body_fields,size=24 if item['template_key']=='executive' else 22)
-        if name in ('title','client') and item['template_key'] not in ('divider','cover'):fit_title_width(shape)
+        if name in ('title','client','department') and item['template_key'] not in ('divider','cover'):fit_title_width(shape)
         try:_fit_copy(shape,item['fields'][name])
         except ValueError as exc:raise ValueError(item['template_key']+' / '+name+': '+str(exc)) from exc
     if info['table']: set_table(find_shape(root,info['table']),item['rows'])
