@@ -1,0 +1,31 @@
+/* PMC Intelligence Hub – approved mockup atmospheric refinements. */
+body.hub-page:has(#hubHome:not([hidden])) #hubFrame > .app-header{display:none!important}
+.hub-page .hub-sidebar{background:radial-gradient(ellipse at 100% 12%,rgba(20,53,79,.17),transparent 51%),radial-gradient(ellipse at 75% 108%,rgba(15,48,74,.22),transparent 66%),linear-gradient(175deg,#071522 0%,#03101a 63%,#020b14 100%);border-right:1px solid rgba(33,68,96,.28)}
+.launch-home{background:radial-gradient(ellipse at 84% 6%,rgba(31,81,128,.16),transparent 42%),linear-gradient(180deg,#030e19 0%,#020b15 62%,#020b15 100%)}
+.launch-hero{background:radial-gradient(ellipse at 78% 66%,rgba(16,60,102,.28),transparent 56%),radial-gradient(ellipse at 74% 10%,rgba(26,66,112,.14),transparent 48%),linear-gradient(110deg,#020b15 7%,#051525 63%,#05172a 100%)}
+.launch-hero::before{background-image:radial-gradient(rgba(169,214,255,.74) .6px,transparent 1.15px),radial-gradient(rgba(116,163,219,.55) .7px,transparent 1.6px);background-size:83px 76px,127px 117px;background-position:0 0,45px 26px;opacity:.19}
+.launch-hero-art{background-position:center center!important;background-repeat:no-repeat!important;background-size:100% 100%!important;opacity:1;-webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.08) 4%,rgba(0,0,0,.43) 15%,rgba(0,0,0,.84) 27%,black 38%);mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.08) 4%,rgba(0,0,0,.43) 15%,rgba(0,0,0,.84) 27%,black 38%)}
+.launch-hero-art::after{background:linear-gradient(90deg,rgba(2,11,21,.30),rgba(2,11,21,.06) 36%,transparent 54%)}
+.launch-hero-copy{z-index:3}
+.launch-hero h1{font-weight:820;text-shadow:0 2px 14px rgba(0,0,0,.2)}
+.launch-hero h1 span{color:#35a7fd}
+.launch-principles .principle-caption{color:#a7b9d2}
+.launch-tools{position:relative;z-index:2}
+.launch-tile{background:radial-gradient(ellipse at 105% 110%,rgba(16,69,104,.20),transparent 66%),radial-gradient(ellipse at 3% -40%,rgba(28,74,109,.13),transparent 70%),linear-gradient(142deg,#06121d,#081725 68%,#06121d);border-color:rgba(58,112,151,.20);box-shadow:inset 0 1px rgba(119,177,224,.018),0 5px 20px rgba(0,0,0,.06)}
+.launch-tile:before{pointer-events:none}
+.launch-tile:hover{border-color:rgba(95,176,247,.64);background:radial-gradient(ellipse at 100% 100%,rgba(16,69,104,.31),transparent 65%),linear-gradient(142deg,#06121d,#081b2b)}
+.launch-tile-icon{color:#74b9ff;filter:drop-shadow(0 0 4px rgba(66,150,232,.12))}
+.launch-tile-title{color:#f8fbff}
+.launch-tile-desc{color:#adc2d9}
+.launch-decoration{opacity:.63;filter:drop-shadow(0 0 5px rgba(41,147,234,.32))}
+.launch-decoration path{stroke:#5ab9ff;stroke-width:1.55}
+.launch-decoration rect{fill:#258ee7;opacity:.49}
+.launch-tile--orbit:before{content:"";position:absolute;bottom:-91px;right:-49px;width:310px;height:174px;transform:rotate(-20deg);border-radius:50%;border-top:1.5px solid rgba(95,199,255,.91);box-shadow:0 -5px 12px -8px rgba(119,213,255,.9),0 -15px 35px -18px #2c9fea;background:radial-gradient(ellipse at 50% 1%,rgba(24,85,149,.16),transparent 65%);opacity:.87}
+.launch-tile--orbit .launch-decoration{opacity:.4}
+.launch-bottom{background:radial-gradient(ellipse at 92% 92%,rgba(20,70,107,.22),transparent 52%),linear-gradient(110deg,#061623 0%,#071828 66%,#081b29 100%);border-color:rgba(58,112,151,.22)}
+.launch-bottom:after{content:"";position:absolute;top:55%;bottom:auto;left:auto;right:-12%;width:53%;height:185%;border-radius:50% 50% 0 0!important;border-top:3px solid rgba(130,219,255,.95)!important;box-shadow:0 -8px 19px -9px rgba(65,165,247,.8),0 -20px 45px -23px rgba(47,117,195,.75)!important;transform:rotate(-20deg)!important;background:radial-gradient(ellipse at 55% 0%,rgba(31,101,175,.32),transparent 57%);opacity:.97;-webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.28) 21%,#000 57%);mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.28) 21%,#000 57%);pointer-events:none}
+.launch-bottom-icon{color:#65b6ff}
+.launch-bottom-end{color:#d1e2f5}
+@media(min-width:1500px){.launch-hero-art{background-position:center center!important;background-size:100% 100%!important}}
+@media(max-width:1099px){body.hub-page:has(#hubHome:not([hidden])) #hubFrame > .app-header{display:grid!important}}
+@media(max-width:650px){.launch-hero-art{background-size:auto 100%!important;background-position:51% top!important;-webkit-mask-image:linear-gradient(90deg,transparent,rgba(0,0,0,.34) 21%,#000 55%);mask-image:linear-gradient(90deg,transparent,rgba(0,0,0,.34) 21%,#000 55%)}.launch-bottom:after{width:65%;opacity:.6}}
