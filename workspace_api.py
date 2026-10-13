@@ -7,12 +7,13 @@ from storage import db, get
 from strategy_engine import build_strategy
 from deck_engine import default_outline
 from workspace_core import apply_patch, revision, synchronize_sections
+from pmc_template_library import template_status
 
 workspace = Blueprint('workspace', __name__)
 
 
 def package(project):
-    return {'project': project, 'revision': revision(project), 'generation_kind': 'template-guided'}
+    return {'project': project, 'revision': revision(project), 'generation_kind': 'template-guided', 'deck_template': template_status()}
 
 
 @workspace.before_request
@@ -124,3 +125,8 @@ def restore_deck(pid):
         project['deck_needs_review'] = True
         return project
     return transaction(pid, change, data.get('revision'))
+
+
+@workspace.get('/api/strategy-template')
+def read_strategy_template():
+    return jsonify(template_status())

@@ -13,7 +13,7 @@ def _rgb(v,fallback):
         h=(v or "").replace("#",""); return RGBColor(int(h[:2],16),int(h[2:4],16),int(h[4:6],16))
     except: return fallback
 
-def default_outline(p):
+def legacy_outline(p):
     out=[{"title":str(p.get("client","Client"))+" Strategy","body":"Integrated Marketing Strategy\nPrepared by PMC Media Group","type":"cover","include":True},{"title":"Executive Direction","body":p.get("strategy",{}).get("executive",""),"type":"content","include":True}]
     n=p.get("strategy",{}).get("narrative",{})
     if n: out.append({"title":"The Strategic Opportunity","body":"THE OPPORTUNITY\n"+n.get("opportunity","")+"\n\nTHE CHALLENGE\n"+n.get("challenge","")+"\n\nOUR STRATEGIC RESPONSE\n"+n.get("strategic_response",""),"type":"content","include":True})
@@ -43,10 +43,10 @@ def text(slide,x,y,w,h,value,size=15,color=MUTED,bold=False):
         p=tf.paragraphs[0] if i==0 else tf.add_paragraph(); p.text=line; p.font.size=Pt(size); p.font.color.rgb=color; p.font.bold=bold; p.space_after=Pt(6)
     return box
 
-def build_pptx(p):
+def build_legacy_pptx(p):
     prs=Presentation(); prs.slide_width=Inches(13.333); prs.slide_height=Inches(7.5)
     brand=p.get("deck_branding",{}); brand_color=_rgb(brand.get("accent_color"),TEAL); treatment=brand.get("treatment","pmc")
-    for item in (p.get("deck_outline") or default_outline(p)):
+    for item in (p.get("deck_outline") or legacy_outline(p)):
         if item.get("include",True) is False: continue
         typ=item.get("type","content"); dark=typ in ("cover","closing"); slide=prs.slides.add_slide(prs.slide_layouts[6])
         bg=slide.background.fill; bg.solid(); bg.fore_color.rgb=NAVY if dark else WHITE
@@ -98,3 +98,21 @@ def build_pptx(p):
         else:
             text(slide,1,1.7,11.2,4.9,item.get("body",""),16,RGBColor(205,220,228) if dark else MUTED)
     out=BytesIO(); prs.save(out); out.seek(0); return out
+
+
+# Preserve existing manually edited/legacy outlines. Only a new draft or an
+# explicitly requested rebuild switches to the approved PMC master library.
+def default_outline(p):
+    from proposal_blueprint import default_outline as master_outline
+    return master_outline(p)
+
+
+def build_pptx(p):
+    from pmc_template_library import render_master
+    outline=p.get('deck_outline') or default_outline(p)
+    selected=[s for s in outline if s.get('include',True) is not False]
+    if any(s.get('template_key') for s in selected):
+        if not all(s.get('template_key') for s in selected):
+            raise ValueError('Mixed legacy and PMC-master slides require an explicit rebuild.')
+        return render_master(outline)
+    return build_legacy_pptx({**p,'deck_outline':outline})

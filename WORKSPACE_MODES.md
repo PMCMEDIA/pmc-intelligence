@@ -8,7 +8,7 @@ Changes use field-scoped patches and a SHA-256 revision check inside a SQLite wr
 
 Section suggestions are read-only until explicitly accepted. Draft decks can be built before approval. Existing edited outlines are reused unless explicitly rebuilt; one prior outline is retained for restoration. Manual objectives, KPI copy and recommendation lists take precedence when drafting.
 
-The existing strategy generator is rule/template-based, not a newly connected LLM. Exact preservation of the DeQuattro/Viva master presentation is NOT implemented by this change. Social auditing/pricing and production dependency pricing remain separate work. The UI labels these limitations. It does not invent missing forecasts, prices or research.
+The existing strategy generator is rule/template-based, not a newly connected LLM. The initial workspace-modes-1 release did not implement the reference master. The later pmc-master-v1 integration now maps saved content to editable source-master slides; see MASTER_TEMPLATE.md. Existing saved legacy outlines are preserved until explicitly rebuilt. Social auditing/pricing and production dependency pricing remain separate work. The UI labels these limitations. It does not invent missing forecasts, prices or research.
 
 No database schema, storage path, project ID, account or disk is changed. The prior interface remains at /classic. The existing session-based authentication is unchanged; this is not an authentication-hardening release.
 
