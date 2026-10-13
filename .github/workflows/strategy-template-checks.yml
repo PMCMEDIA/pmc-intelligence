@@ -24,7 +24,7 @@ jobs:
       - run: python -m compileall -q app.py workspace_api.py workspace_core.py
       - run: python -m unittest discover -s tests -p 'test_*template*.py' -v
       - name: Archive tracked source only for local verification
-        run: git archive --format=zip --output=strategy-source-snapshot.zip HEAD -- '*.py' '*.md' static templates tests requirements.txt .github
+        run: git archive --format=zip --output=strategy-source-snapshot.zip HEAD
       - uses: actions/upload-artifact@v4
         with:
           name: strategy-source-snapshot
