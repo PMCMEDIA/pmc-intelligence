@@ -65,8 +65,20 @@ def apply_patch(project, patch):
             value = row.get(key)
             if value is not None and (not isinstance(value, (int, float)) or value < 0):
                 raise ValueError('Allocations cannot be negative.')
+    patch = copy.deepcopy(patch)
+    if 'deck_outline' in patch:
+        from pmc_template_library import validate_slide, preview_text, VERSION
+        slides=patch['deck_outline']
+        if len(slides)>120: raise ValueError('A draft deck may contain up to 120 slides.')
+        if any(not isinstance(item,dict) for item in slides): raise ValueError('Each slide must be an object.')
+        templated=[item for item in slides if item.get('template_key')]
+        if templated and len(templated)!=len(slides): raise ValueError('Do not mix legacy and PMC-master slides. Rebuild the draft explicitly.')
+        for item in templated:
+            validate_slide(item)
+            item['body']=preview_text(item)
+            item['template_version']=VERSION
     result = copy.deepcopy(project)
-    result.update(copy.deepcopy(patch))
+    result.update(patch)
     if CONTENT & patch.keys():
         changed = {key for key in CONTENT & patch.keys() if project.get(key) != result.get(key)}
         if changed:

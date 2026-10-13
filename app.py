@@ -8,6 +8,7 @@ from deck_engine import default_outline,build_pptx
 from flask import send_file
 from website_engine import analyze as analyze_website, compare as compare_websites
 from workspace_api import workspace
+from pmc_template_library import template_status
 import os, uuid, re
 from urllib.parse import urlparse
 
@@ -143,7 +144,10 @@ def save_deck_outline(pid):
     if not owner(): return jsonify({"error":"Login required"}),401
     p=get(owner(),pid)
     if not p: return jsonify({"error":"Project not found"}),404
-    p["deck_outline"]=(request.json or {}).get("slides",[]); p["status"]="Deck Outline Ready"; save(owner(),p)
+    from workspace_core import apply_patch
+    try:p=apply_patch(p,{"deck_outline":(request.json or {}).get("slides",[])})
+    except ValueError as exc:return jsonify({"error":str(exc)}),400
+    p["status"]="Deck Outline Ready"; save(owner(),p)
     return jsonify({"ok":True,"slides":p["deck_outline"]})
 
 @app.get("/api/projects/<pid>/deck.pptx")
@@ -155,6 +159,8 @@ def export_deck(pid):
     if not p.get("deck_outline"): p["deck_outline"]=default_outline(p); save(owner(),p)
     if not any(x.get("include",True) for x in p.get("deck_outline",[])): return jsonify({"error":"Deck must include at least one slide"}),400
     try: stream=build_pptx(p)
+    except ValueError as e:
+        return jsonify({"error":str(e)}),400
     except Exception as e:
         app.logger.exception("Deck export failed for %s",pid)
         return jsonify({"error":"PowerPoint export failed. Please review the deck and try again."}),500
@@ -187,7 +193,7 @@ def health():
     try:
         from storage import db
         with db() as conn: conn.execute("SELECT 1").fetchone()
-        return {"ok":True,"version":"workspace-modes-1","database":"ok","commit":os.getenv("RENDER_GIT_COMMIT","")}
+        return {"ok":True,"version":"workspace-modes-1","database":"ok","commit":os.getenv("RENDER_GIT_COMMIT",""),"deck_template":template_status()}
     except Exception:
         return {"ok":False,"version":"workspace-modes-1","database":"error"},503
 
