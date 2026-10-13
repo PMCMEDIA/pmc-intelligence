@@ -10,8 +10,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='mission_control.css') }}?v=mission-control-lightfix-2"><link rel="stylesheet" href="{{ url_for('static', filename='rocket_hub.css') }}?v=rocket-hub-2">
 <link rel="stylesheet" href="{{ url_for('static', filename='launch_exact.css') }}?v=launch-exact-1">
 <link rel="stylesheet" href="{{ url_for('static', filename='launch_finish.css') }}?v=approved-fade-3">
+<link rel="stylesheet" href="{{ url_for('static', filename='theme_recovery.css') }}?v=theme-recovery-1">
 </head>
-<body class="hub-page" data-hub-release="approved-fade-3" data-authenticated="{{ 'true' if logged_in else 'false' }}">
+<body class="hub-page" data-hub-release="theme-recovery-1" data-authenticated="{{ 'true' if logged_in else 'false' }}">
 {% from 'hub_components.html' import hub_sidebar, hub_pages %}
 {{ hub_sidebar(logged_in) }}
 <div id="hubFrame" class="hub-frame">
