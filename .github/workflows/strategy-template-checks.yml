@@ -19,7 +19,8 @@ jobs:
         run: |
           import sys, json, os
           from pathlib import Path
-          sys.path.insert(0,'tests')
+          sys.path.insert(0,str(Path.cwd()))
+          sys.path.insert(0,str(Path.cwd()/'tests'))
           from test_master_template import fixture
           from deck_engine import default_outline, build_pptx
           from pmc_template_library import template_status
