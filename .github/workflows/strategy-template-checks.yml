@@ -1,0 +1,32 @@
+name: Strategy template checks
+on:
+  push:
+    branches: [feature/template-driven-strategy]
+  pull_request:
+    paths:
+      - '**.py'
+      - 'templates/**'
+      - 'static/workspace_modes.js'
+      - 'pmc_templates/**'
+      - '.github/workflows/strategy-template-checks.yml'
+permissions:
+  contents: read
+jobs:
+  template-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - run: python -m compileall -q app.py workspace_api.py workspace_core.py
+      - run: python -m unittest discover -s tests -p 'test_*template*.py' -v
+      - name: Archive tracked source only for local verification
+        run: git archive --format=zip --output=strategy-source-snapshot.zip HEAD -- '*.py' '*.md' static templates tests requirements.txt .github
+      - uses: actions/upload-artifact@v4
+        with:
+          name: strategy-source-snapshot
+          path: strategy-source-snapshot.zip
+          retention-days: 3
