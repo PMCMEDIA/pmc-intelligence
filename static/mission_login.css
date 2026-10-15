@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
 /* PMC Mission Control sign-in; authenticated application remains unchanged. */
 body[data-authenticated="false"]{background:#020b16!important;color:#edf8ff}
 body[data-authenticated="false"] #hubSidebar,body[data-authenticated="false"] .app-header,body[data-authenticated="false"] [data-hub-panel]:not(.mission-login){display:none!important}
@@ -34,7 +35,7 @@ body[data-authenticated="false"] .hub-frame{margin:0!important;max-width:none!im
 @media(prefers-reduced-motion:reduce){.mission-login *{scroll-behavior:auto}}
 
 /* Visual fidelity pass: cinematic photography, strong futuristic display type, and balanced composition. */
-@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+
 body[data-authenticated="false"] .mission-login{font-family:'Inter',Arial,sans-serif;min-height:100svh;padding:clamp(26px,3.4vw,58px) clamp(28px,4.7vw,86px);background:linear-gradient(90deg,rgba(1,10,22,.68) 0%,rgba(1,11,25,.25) 46%,rgba(1,9,21,.72) 100%),linear-gradient(180deg,#020916 0%,rgba(2,12,28,.96) 29%,rgba(1,10,25,.22) 75%,#020914 100%),url('https://svs.gsfc.nasa.gov/vis/a010000/a011100/a011157/G2012-129_Earth_At_Night-youtube_hq00552_print.jpg') center 78% / cover no-repeat,#020b17}
 body[data-authenticated="false"] .mission-login:before{opacity:.16;background-size:137px 151px,193px 211px}
 body[data-authenticated="false"] .mission-login:after{display:none}
