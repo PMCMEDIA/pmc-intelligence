@@ -87,3 +87,7 @@ body[data-authenticated="false"] .mission-login__values svg{display:block;width:
 body[data-authenticated="false"] .mission-login__values div{display:flex;align-items:center;flex-direction:column;justify-content:flex-start;gap:4px;min-width:0}
 body[data-authenticated="false"] .mission-login__values span{max-width:130px}
 @media(max-width:560px){body[data-authenticated="false"] .mission-login{background-position:45% center!important}body[data-authenticated="false"] .mission-login__values svg{width:30px;height:30px}}
+
+/* Final approved photographic background uploaded to repository. */
+body[data-authenticated="false"] .mission-login{background:linear-gradient(90deg,rgba(1,9,20,.13),rgba(1,10,22,.06) 50%,rgba(1,9,20,.2)),url('/static/mission-control-background.png') center center / cover no-repeat,#020b17!important}
+@media(max-width:560px){body[data-authenticated="false"] .mission-login{background-position:center,42% center!important}}
