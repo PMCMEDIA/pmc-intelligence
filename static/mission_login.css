@@ -80,3 +80,10 @@ body[data-authenticated="false"] .mission-login__submit{margin-top:8px;backgroun
 body[data-authenticated="false"] .mission-login__quote{padding:16px 22px;display:inline-block;border:1px solid rgba(73,143,174,.42);border-radius:11px;background:rgba(1,14,29,.67);line-height:2.2}
 body[data-authenticated="false"] .mission-login__footer{border:1px solid rgba(73,143,174,.38);border-radius:18px;padding:24px 28px;background:rgba(1,13,27,.77)}
 @media(max-width:900px){body[data-authenticated="false"] .mission-login__content{grid-template-columns:1fr}body[data-authenticated="false"] .mission-login__quote{display:none}}
+
+/* Local image is bundled with the app: no broken NASA URL or network dependency. */
+body[data-authenticated="false"] .mission-login{background:linear-gradient(90deg,rgba(1,9,20,.15),rgba(1,10,22,.1) 50%,rgba(1,9,20,.25)),url('/static/mission-earth.svg') center center / cover no-repeat,#020b17!important}
+body[data-authenticated="false"] .mission-login__values svg{display:block;width:36px;height:36px;margin:0 auto 13px;stroke:#e0f4ff;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+body[data-authenticated="false"] .mission-login__values div{display:flex;align-items:center;flex-direction:column;justify-content:flex-start;gap:4px;min-width:0}
+body[data-authenticated="false"] .mission-login__values span{max-width:130px}
+@media(max-width:560px){body[data-authenticated="false"] .mission-login{background-position:45% center!important}body[data-authenticated="false"] .mission-login__values svg{width:30px;height:30px}}
