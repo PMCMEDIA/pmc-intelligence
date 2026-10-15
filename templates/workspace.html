@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='launch_exact.css') }}?v=launch-exact-1">
 <link rel="stylesheet" href="{{ url_for('static', filename='launch_finish.css') }}?v=approved-fade-3">
 <link rel="stylesheet" href="{{ url_for('static', filename='theme_recovery.css') }}?v=theme-recovery-1">
-<link rel="stylesheet" href="{{ url_for('static', filename='mission_login.css') }}?v=login-3">
+<link rel="stylesheet" href="{{ url_for('static', filename='mission_login.css') }}?v=login-4">
 </head>
 <body class="hub-page" data-hub-release="theme-recovery-1" data-authenticated="{{ 'true' if logged_in else 'false' }}">
 {% from 'hub_components.html' import hub_sidebar, hub_pages %}
@@ -27,7 +27,7 @@
 <main class="mission-login" data-hub-panel="strategy">
  <div class="mission-login__top"><img src="{{ url_for('static', filename='pmc-intelligence-logo.png') }}" alt="PMC Intelligence" class="mission-login__logo"><span>INSIGHTS. STRATEGY. MOMENTUM.</span></div>
  <div class="mission-login__content">
-  <section class="mission-login__hero"><p class="mission-login__eyebrow">WELCOME BACK,</p><h1 tabindex="-1">COMMANDER<span>.</span></h1><p class="mission-login__tagline">SAME CREW. HIGHER ALTITUDE.</p><div class="mission-login__values"><div><b>↗</b> BIGGER IDEAS</div><div><b>▥</b> SMARTER STRATEGIES</div><div><b>◎</b> STRONGER EXECUTION</div><div><b>△</b> REAL RESULTS</div></div><p class="mission-login__quote">STRATEGY TURNS POTENTIAL<br>INTO PROGRESS.</p></section>
+  <section class="mission-login__hero"><p class="mission-login__eyebrow">WELCOME BACK,</p><h1 tabindex="-1">COMMANDER<span>.</span></h1><p class="mission-login__tagline">SAME CREW. HIGHER ALTITUDE.</p><div class="mission-login__values"><div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14c3-5 7-8 15-9-1 8-4 12-9 15l-2-4-4-2Z M12 12l.01 0 M4 17l-2 5 5-2"/></svg><span>BIGGER IDEAS</span></div><div><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="14" width="4" height="7"/><rect x="10" y="9" width="4" height="12"/><rect x="17" y="3" width="4" height="18"/></svg><span>SMARTER STRATEGIES</span></div><div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="13" r="9"/><circle cx="11" cy="13" r="5"/><circle cx="11" cy="13" r="1"/><path d="m11 13 9-9 M16 4h4v4"/></svg><span>STRONGER EXECUTION</span></div><div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m2 20 7-12 4 6 3-5 6 11H2Z M9 8l2 3 2-3"/></svg><span>REAL RESULTS</span></div></div><p class="mission-login__quote">STRATEGY TURNS POTENTIAL<br>INTO PROGRESS.</p></section>
   <section class="mission-login__card" aria-labelledby="missionLoginTitle"><p class="mission-login__eyebrow">SIGN IN TO</p><h2 id="missionLoginTitle">PMC INTELLIGENCE HUB</h2><p class="mission-login__sub">Your mission starts here.</p><form method="post" action="/enter"><label for="loginEmail" class="mission-login__sr">PMC email address</label><div class="mission-login__inputwrap"><span aria-hidden="true">✉</span><input id="loginEmail" name="email" type="email" autocomplete="email" placeholder="Email address" required></div><button class="mission-login__submit" type="submit">LAUNCH <span aria-hidden="true">→</span></button></form>{% if login_error %}<p class="mission-login__error" role="alert">{{ login_error }}</p>{% endif %}<p class="mission-login__access">Internal access · @pmcne.com accounts only</p></section>
  </div>
  <footer class="mission-login__footer"><span>PEOPLE + STRATEGY + TECHNOLOGY = IMPACT</span><span>BUILT FOR BRANDS THAT GO FURTHER</span></footer>
