@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
 /* PMC Mission Control sign-in; authenticated application remains unchanged. */
 body[data-authenticated="false"]{background:#020b16!important;color:#edf8ff}
 body[data-authenticated="false"] #hubSidebar,body[data-authenticated="false"] .app-header,body[data-authenticated="false"] [data-hub-panel]:not(.mission-login){display:none!important}
@@ -32,3 +33,34 @@ body[data-authenticated="false"] .hub-frame{margin:0!important;max-width:none!im
 @media(max-width:900px){.mission-login__content{grid-template-columns:1fr;gap:30px;padding:45px 0}.mission-login__card{justify-self:center;max-width:560px}.mission-login__hero h1{letter-spacing:-1px}.mission-login__values{margin-top:30px}.mission-login__quote{display:none}.mission-login:after{bottom:-34vw}}
 @media(max-width:560px){.mission-login{padding:22px 18px}.mission-login__top>span{display:none}.mission-login__logo{width:210px}.mission-login__content{padding:32px 0}.mission-login__hero h1{font-size:42px}.mission-login__tagline{letter-spacing:2px}.mission-login__values{grid-template-columns:repeat(2,1fr);gap:12px}.mission-login__values b{margin-bottom:4px}.mission-login__card{padding:24px 20px}.mission-login__footer{font-size:8px;letter-spacing:1px;flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){.mission-login *{scroll-behavior:auto}}
+
+/* Visual fidelity pass: cinematic photography, strong futuristic display type, and balanced composition. */
+
+body[data-authenticated="false"] .mission-login{font-family:'Inter',Arial,sans-serif;min-height:100svh;padding:clamp(26px,3.4vw,58px) clamp(28px,4.7vw,86px);background:linear-gradient(90deg,rgba(1,10,22,.68) 0%,rgba(1,11,25,.25) 46%,rgba(1,9,21,.72) 100%),linear-gradient(180deg,#020916 0%,rgba(2,12,28,.96) 29%,rgba(1,10,25,.22) 75%,#020914 100%),url('https://svs.gsfc.nasa.gov/vis/a010000/a011100/a011157/G2012-129_Earth_At_Night-youtube_hq00552_print.jpg') center 78% / cover no-repeat,#020b17}
+body[data-authenticated="false"] .mission-login:before{opacity:.16;background-size:137px 151px,193px 211px}
+body[data-authenticated="false"] .mission-login:after{display:none}
+body[data-authenticated="false"] .mission-login__top{align-items:flex-start}
+body[data-authenticated="false"] .mission-login__logo{width:clamp(185px,17vw,265px)}
+body[data-authenticated="false"] .mission-login__top>span{font-size:11px;letter-spacing:3.5px;margin-top:15px}
+body[data-authenticated="false"] .mission-login__content{max-width:1480px;grid-template-columns:minmax(0,1.15fr) minmax(420px,.85fr);gap:clamp(35px,5.8vw,105px);padding:40px 0 70px;align-items:center}
+body[data-authenticated="false"] .mission-login__hero{transform:translateY(-8px)}
+body[data-authenticated="false"] .mission-login__hero h1{font-family:'Oxanium','Arial Black',sans-serif;font-size:clamp(57px,5.6vw,102px);font-weight:800;letter-spacing:-3.8px;line-height:1.06;margin:20px 0 14px;text-shadow:0 4px 30px #0008}
+body[data-authenticated="false"] .mission-login__hero h1 span{color:#28d7df}
+body[data-authenticated="false"] .mission-login__eyebrow{font-size:14px;font-weight:500;letter-spacing:5px;color:#b5d6eb}
+body[data-authenticated="false"] .mission-login__tagline{font-size:15px;font-weight:500;letter-spacing:5.4px;color:#b3d4e9}
+body[data-authenticated="false"] .mission-login__values{margin-top:62px;gap:20px;max-width:700px}
+body[data-authenticated="false"] .mission-login__values div{font-size:11px;font-weight:600;letter-spacing:1.7px;text-shadow:0 2px 12px #000}
+body[data-authenticated="false"] .mission-login__values b{font-size:34px;color:#d6f7ff}
+body[data-authenticated="false"] .mission-login__quote{margin-top:85px;font-size:12px;font-weight:600;line-height:2.1;text-shadow:0 3px 12px #000}
+body[data-authenticated="false"] .mission-login__card{max-width:600px;padding:clamp(35px,3.4vw,62px);border:1px solid rgba(83,158,191,.5);border-radius:17px;background:linear-gradient(145deg,rgba(6,27,45,.95),rgba(2,12,26,.97));box-shadow:0 28px 85px #0009, inset 0 1px rgba(166,229,255,.06);backdrop-filter:blur(16px)}
+body[data-authenticated="false"] .mission-login__card .mission-login__eyebrow{font-size:13px;letter-spacing:4.2px}
+body[data-authenticated="false"] .mission-login__card h2{font-size:clamp(24px,2.2vw,34px);font-weight:600;letter-spacing:-.6px;margin:20px 0 8px}
+body[data-authenticated="false"] .mission-login__sub{font-size:16px;margin-bottom:43px}
+body[data-authenticated="false"] .mission-login__card label{font-size:14px;font-weight:500;margin-bottom:12px}
+body[data-authenticated="false"] .mission-login__card input{min-height:64px;font-size:16px;padding:20px;border-radius:11px;background:rgba(13,40,61,.72)}
+body[data-authenticated="false"] .mission-login__submit{min-height:62px;font-family:'Oxanium',sans-serif;font-size:18px;letter-spacing:4px;margin-top:26px}
+body[data-authenticated="false"] .mission-login__access{font-size:12px;margin-top:36px}
+body[data-authenticated="false"] .mission-login__footer{position:relative;z-index:1;font-size:10px;background:rgba(1,11,23,.48);border-top:1px solid #426078;padding:20px 0 0}
+@media(max-width:1050px){body[data-authenticated="false"] .mission-login__content{grid-template-columns:minmax(0,1fr) minmax(370px,.9fr);gap:30px}body[data-authenticated="false"] .mission-login__hero h1{font-size:clamp(42px,5.7vw,72px)}body[data-authenticated="false"] .mission-login__values{gap:8px}body[data-authenticated="false"] .mission-login__values div{font-size:9px}}
+@media(max-width:900px){body[data-authenticated="false"] .mission-login__content{grid-template-columns:1fr;padding:44px 0}body[data-authenticated="false"] .mission-login__hero h1{font-size:clamp(45px,9vw,78px)}body[data-authenticated="false"] .mission-login__values{margin-top:25px}body[data-authenticated="false"] .mission-login__card{justify-self:center}body[data-authenticated="false"] .mission-login__quote{display:none}}
+@media(max-width:560px){body[data-authenticated="false"] .mission-login{padding:22px 18px;background-position:center,center,43% bottom}body[data-authenticated="false"] .mission-login__content{padding:32px 0}body[data-authenticated="false"] .mission-login__hero h1{font-size:clamp(36px,9.8vw,52px);letter-spacing:-2px}body[data-authenticated="false"] .mission-login__tagline{font-size:11px;letter-spacing:2px}body[data-authenticated="false"] .mission-login__values{grid-template-columns:repeat(2,1fr)}body[data-authenticated="false"] .mission-login__card{padding:28px 22px}body[data-authenticated="false"] .mission-login__card h2{font-size:24px}body[data-authenticated="false"] .mission-login__footer{font-size:8px}}
