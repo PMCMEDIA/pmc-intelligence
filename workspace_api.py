@@ -130,3 +130,12 @@ def restore_deck(pid):
 @workspace.get('/api/strategy-template')
 def read_strategy_template():
     return jsonify(template_status())
+
+
+@workspace.get('/api/projects/<pid>/workspace/readiness')
+def project_export_readiness(pid):
+    project = get(session['owner'], pid)
+    if not project:
+        return jsonify({'error': 'Project not found.'}), 404
+    from strategyiq_readiness import export_readiness
+    return jsonify(export_readiness(project))
