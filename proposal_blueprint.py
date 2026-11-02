@@ -146,7 +146,33 @@ def default_outline(project):
             narrative('Competitive Landscape', 'PUBLIC-SEARCH CANDIDATES · NOT VERIFIED COMPETITORS\n\n'+ '\n\n'.join(text(c.get('title'))+'\n'+text(c.get('url')) for c in competition)+'\n\nValidate market relevance and source evidence before presenting competitor claims.','Digital Media')
         outlook=p.get('campaign_outlook') or {}
         if outlook:
-            narrative('Measurement & Forecast Review','FORECAST STATUS\nThe existing model uses planning assumptions. Independently sourced industry benchmarks, investment period and defensible client economics must be confirmed before client-ready KPI or ROI scenarios are included.\n\nSaved scenario values are not automatically copied into this PMC template draft.','Digital Media')
+            scenarios=outlook.get('scenarios') or []
+            lines=['MODEL STATUS',text(outlook.get('source_type')) or 'Unverified planning assumptions',
+                   'Industry planning defaults are NOT independently sourced benchmarks. Forecasts are illustrative, not guaranteed results.',
+                   'SCENARIO PROJECTIONS']
+            for row in scenarios[:6]:
+                if not isinstance(row,dict):continue
+                lines.append(text(row.get('scenario')) or 'Scenario')
+                lines.append('Search investment: '+money(row.get('search_budget'))+
+                             ' | CPC: '+money(row.get('cpc'))+
+                             ' | Estimated clicks: '+text(row.get('clicks')))
+                lines.append('Conversion rate: '+text(row.get('conversion_rate'))+
+                             '% | Estimated conversions: '+text(row.get('conversions'))+
+                             ' | Cost per conversion: '+money(row.get('cpa')))
+            lines.append('REVIEW BEFORE CLIENT PRESENTATION')
+            lines.append('Confirm the investment period, actual channel allocation, source-dated industry benchmarks, conversion definition and tracking plan.')
+            narrative('KPI Scenario Outlook','\n'.join(lines),'Digital Media')
+            if outlook.get('roi_ready'):
+                roi=['ILLUSTRATIVE ROI / ROAS MODEL','Financial projections use client-supplied economics and modeled conversion assumptions. Verify lead value, close rate, customer value, margin and attribution before presenting.']
+                for row in scenarios[:6]:
+                    if not isinstance(row,dict):continue
+                    roi.append((text(row.get('scenario')) or 'Scenario')+
+                               ' | Modeled revenue: '+money(row.get('projected_revenue'))+
+                               ' | ROAS: '+(text(row.get('roas'))+'x' if row.get('roas') is not None else 'Not modeled')+
+                               ' | ROI: '+(text(row.get('roi_percent'))+'%' if row.get('roi_percent') is not None else 'Not modeled'))
+                roi.append('ROI is a scenario estimate, not verified incremental return. Confirm attribution and cost inclusions.')
+                narrative('ROI Scenario Outlook','\n\n'.join(roi),'Digital Media')
+
     if 'SEO / AEO' in departments:
         d=section(p,'SEO / AEO')
         # Detailed recommendations stay intact in their own master-layout slide.
