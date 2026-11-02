@@ -139,3 +139,32 @@ def project_export_readiness(pid):
         return jsonify({'error': 'Project not found.'}), 404
     from strategyiq_readiness import export_readiness
     return jsonify(export_readiness(project))
+
+@workspace.get('/api/ai-planning/status')
+def ai_planning_status():
+    from ai_research_planner import enabled
+    return jsonify({'configured': enabled()})
+
+@workspace.post('/api/projects/<pid>/workspace/ai-plan')
+def generate_ai_plan(pid):
+    from ai_research_planner import enabled, research_plan
+    if not enabled():
+        return jsonify({'error':'AI research is not configured on the server. Set OPENAI_API_KEY in Render environment variables.'}), 503
+    data=request.get_json(silent=True) or {}
+    current=get(session['owner'],pid)
+    if not current:
+        return jsonify({'error':'Project not found.'}),404
+    expected=data.get('revision')
+    if not expected or revision(current)!=expected:
+        return jsonify({'error':'This project changed. Reload before generating AI recommendations.','conflict':True}),409
+    try:
+        plan=research_plan(current)
+    except ValueError as error:
+        return jsonify({'error':str(error)}),502
+    def change(project):
+        project['ai_research_plan']=plan
+        project['status']='AI Research Recommendations Ready'
+        # Preserve all human edits and previous deck/approvals. An AI plan is a
+        # recommendation until an explicit approval/application action.
+        return project
+    return transaction(pid,change,expected)
