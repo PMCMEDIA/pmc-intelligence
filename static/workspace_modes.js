@@ -56,7 +56,32 @@
   }
   async function createProject(event) {
     event.preventDefault();
-    await run(async()=>{await save();const form=$('intakeForm');if(!form.reportValidity())return;const body=Object.fromEntries(new FormData(form));body.budget=body.budget||'TBD';body.industry=body.industry||'Other';body.workspace_mode=state.mode;message('Researching the client website and preparing the strategy draft…');const p=await request('/api/projects',body);await openProject(p.id);message('Strategy draft ready. No discovery answers or department approvals are required to preview it.');await listProjects();},event.submitter);
+    const form=$('intakeForm'),submit=event.submitter||form.querySelector('[type="submit"]');
+    if(state.busy)return;
+    if(!form.reportValidity())return;
+    const body=Object.fromEntries(new FormData(form));
+    body.budget=body.budget||'TBD';body.industry=body.industry||'Other';body.workspace_mode=state.mode;
+    let status=$('intakeStatus');
+    if(!status){status=node('p','','intake-status');status.id='intakeStatus';status.setAttribute('role','status');status.setAttribute('aria-live','polite');submit.insertAdjacentElement('afterend',status);}
+    const original=submit.textContent;
+    state.busy=true;submit.disabled=true;submit.textContent='Generating strategy…';
+    status.textContent='Researching the website and preparing your draft. This may take up to two minutes.';
+    message('Researching the client website and preparing the strategy draft…');
+    try{
+      await save();
+      const p=await request('/api/projects',body);
+      if(!p?.id)throw new Error('The server did not return a project ID.');
+      const data=await request('/api/projects/'+encodeURIComponent(p.id)+'/workspace');
+      accept(data);state.screen='strategy';$('projectsDrawer').open=false;render();
+      $('projectHeader').scrollIntoView({block:'start'});
+      status.textContent='Strategy created and saved.';
+      message('Strategy draft ready. Review the generated content and build your draft deck.');
+      await listProjects().catch(()=>{});
+    }catch(error){
+      const detail=error.name==='AbortError'?'The request timed out. Check Shared Projects before trying again to avoid creating a duplicate.':(error.message||'Could not create the strategy.');
+      status.textContent=detail;status.classList.add('error');
+      message(detail,true);
+    }finally{state.busy=false;submit.disabled=false;submit.textContent=original;}
   }
   function card(host,title,subtitle) {const c=add(host,'section','','card');add(c,'h2',title);if(subtitle)add(c,'p',subtitle,'muted');return c;}
   function textField(host,label,value,onInput,{type='text',area=false,min,step}={}) {
