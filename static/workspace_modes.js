@@ -75,6 +75,19 @@
       accept(data);state.screen='strategy';$('projectsDrawer').open=false;render();
       $('projectHeader').scrollIntoView({block:'start'});
       status.textContent='Strategy created and saved.';
+      // Start AI research automatically after project creation when configured.
+      // A failure must never discard the successfully saved base strategy.
+      try{
+        const availability=await request('/api/ai-planning/status');
+        if(availability.configured){
+          status.textContent='Strategy saved. Researching industry and competitor recommendations…';
+          message('Strategy saved. Generating AI planning recommendations…');
+          const plan=await request(projectUrl('/ai-plan'),{revision:state.revision});
+          accept(plan);render();
+        }
+      }catch(aiError){
+        message('Strategy saved. AI research was not completed: '+(aiError.message||'try the AI research button.'),true);
+      }
       message('Strategy draft ready. Review the generated content and build your draft deck.');
       await listProjects().catch(()=>{});
     }catch(error){
@@ -106,8 +119,44 @@
     $('projectHeader').hidden=false;$('projectActions').hidden=false;$('pageTitle').textContent=state.project.client||'Client strategy';$('projectMeta').textContent=[state.project.industry,state.project.status||'Strategy draft'].filter(Boolean).join(' · ');$('projectStatus').textContent='One saved project · '+(state.mode==='ai'?'AI Strategy':'Advanced Builder');
     for(const b of document.querySelectorAll('[data-screen]')){if(b.dataset.screen===state.screen)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');}
     const host=$('projectContent');host.replaceChildren();
-    if(state.screen==='deck')renderDeck(host);else if(state.screen==='review')renderReview(host);else{renderResearch(host);renderExecutive(host);for(const name of departments())renderDepartment(host,name);renderInvestment(host);if(state.mode==='advanced'){renderWebsite(host);renderMeasurement(host);}else renderGaps(host);}
+    if(state.screen==='deck')renderDeck(host);else if(state.screen==='review')renderReview(host);else{renderAIPlan(host);renderResearch(host);renderExecutive(host);for(const name of departments())renderDepartment(host,name);renderInvestment(host);if(state.mode==='advanced'){renderWebsite(host);renderMeasurement(host);}else renderGaps(host);}
     updateSaveState();
+  }
+  function renderAIPlan(host){
+    const p=state.project,plan=p.ai_research_plan;
+    const c=card(host,'AI Research & Recommended Plan','Research-led recommendations are drafts until reviewed. Source links and assumptions should be verified before a client presentation.');
+    const actions=add(c,'div','','actions');
+    button(actions,plan?'Refresh AI research':'Generate AI research & recommendations',async()=>{
+      await save();message('Researching competitors, industry sources, budgets, website scope, production and forecasts. This can take up to two minutes…');
+      const data=await request(projectUrl('/ai-plan'),{revision:state.revision});
+      accept(data);render();message('AI research plan saved. Review all sources and assumptions before applying recommendations.');
+    },'primary');
+    if(!plan){add(c,'p','This research step can propose budgets, website page scope, social plans, production quantities and KPI scenarios. Requires a configured AI research connection.','muted');return;}
+    add(c,'p','Generated '+(plan.generated_at||'')+' · '+(plan.approval_status||'Draft'),'muted small');
+    if(plan.executive_summary)add(c,'p',plan.executive_summary,'long-copy');
+    const budget=plan.recommended_budget||{};
+    add(c,'h3','Recommended investment','subheading');
+    add(c,'p',budget.total==null?'Total: planning range / TBD':'Proposed '+(budget.period||'period to confirm')+' budget: '+money(budget.total));
+    if(budget.rationale)add(c,'p',budget.rationale,'long-copy');
+    const alloc=plan.department_allocations||[];
+    if(alloc.length){for(const row of alloc)add(c,'p',row.department+': '+money(row.amount)+' — '+(row.rationale||''),'long-copy');
+      button(actions,'Apply recommended department allocations',async()=>{
+        if(!confirm('Apply these AI-recommended allocations to the editable investment builder? Existing allocations will be replaced; this does not approve the budget.'))return;
+        p.investment_allocations=alloc.map(x=>({department:x.department,amount:x.amount,percent:budget.total?Math.round(x.amount/budget.total*10000)/100:0,period:budget.period||'To confirm'}));
+        change();await save();render();message('Recommended allocations copied into the editable budget. PMC approval is still required.');
+      });
+    }
+    for(const [key,label] of [['research_findings','Sourced research'],['competitors','Competitor observations'],['benchmarks','Industry benchmarks']]){
+      const items=plan[key]||[];if(!items.length)continue;
+      const d=add(c,'details');add(d,'summary',label+' ('+items.length+')');
+      for(const item of items){const row=add(d,'div','','list-item');add(row,'p',item.claim||item.name||((item.metric||'')+': '+(item.value??'')+' '+(item.unit||'')));if(item.observed_positioning)add(row,'p',item.observed_positioning,'muted small');if(item.implication||item.opportunity)add(row,'p',item.implication||item.opportunity,'muted small');if(item.source_url)safeLink(row,'View source',item.source_url);}
+    }
+    for(const [key,label] of [['website','Website scope & cost'],['social','Social audit, cadence & pricing'],['production','Production quantities & costs'],['forecast','KPI forecast scenarios']]){
+      const value=plan[key];if(!value||typeof value!=='object')continue;
+      const d=add(c,'details');add(d,'summary',label);
+      add(d,'pre',JSON.stringify(value,null,2),'long-copy');
+    }
+    if(plan.uncertainties?.length){add(c,'h3','Assumptions and open questions','subheading');lines(c,plan.uncertainties);}
   }
   function renderResearch(host) {
     const box=add(host,'details','','card');add(box,'summary','Research, source material & items to confirm');
