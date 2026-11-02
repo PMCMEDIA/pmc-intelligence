@@ -148,7 +148,43 @@
   async function approve(name){await save();const p=state.project;p.department_approvals??={};p.department_approvals[name]=!p.department_approvals[name];p.strategy_approved=departments().length>0&&departments().every(n=>p.department_approvals[n]);p.status=p.strategy_approved?'Strategy Reviewed':'Department Review';change({content:false});await save();render();}
   async function suggest(section){await save();const result=await request(projectUrl('/suggestion'),{section});state.suggestion=result;$('suggestionTitle').textContent='Review replacement: '+(section==='executive'?'Executive Summary':section);$('suggestionNote').textContent=result.note;$('currentSuggestion').textContent=section==='executive'?state.project.strategy.executive:JSON.stringify({recommendations:state.project.strategy.departments[section],details:details(section)},null,2);$('newSuggestion').textContent=typeof result.candidate==='string'?result.candidate:JSON.stringify(result.candidate,null,2);$('suggestionDialog').showModal();}
   async function applySuggestion(){const s=state.suggestion;if(!s)return;if(s.revision!==state.revision)throw new Error('The project changed after this suggestion. Generate a fresh suggestion first.');if(s.section==='executive'){state.project.strategy.executive=s.candidate;for(const name of departments())(state.project.department_approvals??={})[name]=false;state.project.strategy_approved=false;change();}else{const n=s.section;state.project.strategy.department_sections??={};state.project.strategy.department_sections[n]=s.candidate.details;setDepartmentField(n,'recommendations',s.candidate.recommendations.join('\n'));for(const [k,v] of Object.entries(s.candidate.details))if(typeof v==='string')setDepartmentField(n,k,v);}await save();$('suggestionDialog').close();state.suggestion=null;render();}
-  function renderGaps(host){const p=state.project,c=card(host,'Items to confirm','These do not block the strategy preview or a draft deck.');const items=[];if(!p.investment_allocations?.some(a=>Number(a.amount)>0))items.push('Investment amounts have not been scoped.');if(!p.website_analysis&&departments().some(n=>n.includes('Website')))items.push('Website analysis and billable page scope need review.');if(!p.campaign_outlook)items.push('No validated campaign forecast is saved yet.');if(!p.social_analysis&&departments().includes('Organic Social'))items.push('Automatic social account auditing and social pricing are not connected in this release.');if(departments().includes('Production'))items.push('Production quantities and rates need confirmation against downstream deliverables.');if(!items.length)items.push('Review remaining source assumptions and departmental recommendations.');lines(c,items);button(c,'Open detailed controls',()=>setMode('advanced'));}
+  function renderGaps(host){
+    const p=state.project,c=card(host,'Research & planning recommendations','Use the research actions below to build a planning draft. Unsourced defaults are assumptions, not verified industry benchmarks.');
+    const tasks=[
+      {missing:!p.investment_allocations?.some(a=>Number(a.amount)>0),label:'Investment recommendation',detail:'A researched total budget and department allocation are not yet available. The system must not invent a client-approved budget.'},
+      {missing:!p.website_analysis&&departments().some(n=>n.includes('Website')),label:'Website scope',detail:'Scan the website and sitemap to identify public pages and potential functionality. Billable page count and final pricing still require a scoped recommendation.'},
+      {missing:!p.campaign_outlook,label:'KPI / forecast model',detail:'Generate provisional scenarios from saved allocations. Current defaults are planning assumptions, not sourced benchmarks.'},
+      {missing:!p.social_analysis&&departments().includes('Organic Social'),label:'Social media audit and pricing',detail:'Account-level social auditing and rate-based social pricing still need a supported data connection.'},
+      {missing:departments().includes('Production')&&!p.production_scope,label:'Production scope and rates',detail:'Recommend video, photo and cutdown quantities from the channel plan. Confirm shoot/edit rates and avoid double-counting shared assets.'}
+    ];
+    for(const task of tasks.filter(t=>t.missing)){
+      const row=add(c,'div','','planning-gap');add(row,'h3',task.label,'subheading');add(row,'p',task.detail,'muted small');
+    }
+    if(!tasks.some(t=>t.missing))add(c,'p','All initial planning inputs are present. Review assumptions and approve only after reviewing the deck.','muted');
+    const actions=add(c,'div','','actions');
+    button(actions,'Research competitors',async()=>{
+      await save();message('Researching public competitor candidates…');
+      await request('/api/projects/'+encodeURIComponent(p.id)+'/competitive',{});
+      accept(await request(projectUrl()));render();
+      message('Competitor candidates saved. Review relevance and sources before using them as evidence.');
+    });
+    if(p.url)button(actions,'Analyze website scope',async()=>{
+      await save();message('Scanning the website and sitemap…');
+      await request('/api/projects/'+encodeURIComponent(p.id)+'/website-analysis',{url:p.url,competitors:[]});
+      accept(await request(projectUrl()));render();
+      message('Website scan saved. Sitemap URLs are not equivalent to billable pages.');
+    });
+    button(actions,'Model KPI scenarios',async()=>{
+      await save();message('Calculating provisional campaign scenarios…');
+      await request('/api/projects/'+encodeURIComponent(p.id)+'/forecast',{});
+      accept(await request(projectUrl()));render();
+      message('Provisional KPI model saved. Review unsourced assumptions before presenting projections.');
+    });
+    button(actions,'Edit investment & production scope',async()=>{
+      await setMode('advanced');
+      $('investment-controls')?.scrollIntoView({block:'start'});
+    });
+  }
   function renderInvestment(host) {
     const p=state.project,c=card(host,'Investment Framework','The same saved prices appear in both views. Unpriced work is not treated as a confirmed zero-cost deliverable.');c.id='investment-controls';
     if(state.mode==='advanced')textField(c,'Budget guidance',p.budget||'',v=>{p.budget=v;change();});else add(c,'p','Budget guidance: '+(p.budget||'Needs confirmation'));
